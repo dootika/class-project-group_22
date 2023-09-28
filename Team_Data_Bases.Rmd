@@ -39,7 +39,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -47,15 +46,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -80,7 +76,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -88,15 +83,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -121,7 +113,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -129,15 +120,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -162,7 +150,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -170,15 +157,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -203,7 +187,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -211,15 +194,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -244,7 +224,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -252,15 +231,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -285,7 +261,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -293,15 +268,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -326,7 +298,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -334,15 +305,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -367,7 +335,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -375,15 +342,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -408,7 +372,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -416,15 +379,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -449,7 +409,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -457,15 +416,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
@@ -490,7 +446,6 @@ url <- html_elements(html, "a")
 url <- html_attr(url, "href")
 i <- 23
 index <- 22
-length(url)
 while (index < length(url)) {
   if (substr(url[index], 1, 9) == "/records/") {
     i <- index
@@ -498,15 +453,12 @@ while (index < length(url)) {
   index <- index + 1
 }
 url <- url[22:i]
-url
 
 tables <- numeric(i - 21)
 for (i in 1:length(tables)) {
   html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
   tables[i] <- html_table(html)
-  print(i)
 }
-print(tables)
 for (i in 1:length(tables)) {
   values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
   values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
