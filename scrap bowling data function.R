@@ -4,12 +4,12 @@ library(dplyr)
 library(ggplot2)
 library(reshape2)
 
-Scrap_Bowling_data <- function(link , row_number,N,name){
-  
-  
+Scrap_Bowling_data <- function(link ,N){
+  name <- read_html(link) %>% html_element(".panel-heading") %>% html_text2()
   data <- read_html(link) %>%
     html_table()
   Data <- data[N][[1]]
+  row_number <- row_number <-dim(Data)[1]
   Data$Runs <-  gsub(pattern = ",",replacement = "",x = Data$Runs)
   Data$Overs <- gsub(pattern = ",",replacement = "",x = Data$Overs)
   Data$'4s' <- gsub(pattern = ",",replacement = "",x = Data$'4s')
@@ -41,13 +41,11 @@ Scrap_Bowling_data <- function(link , row_number,N,name){
   xz  <- Data1[c(row_number),]
   some <- as.numeric(xz[1,5]/xz[1,3])
   
-  
   return(some/6)
-  
 }
 
 
-bowler <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=HH+Pandya&role=all&format=all&groupby=year",9,4, "Hardik Pandya")
+bowler <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=HH+Pandya&role=all&format=all&groupby=year",4)
 
 
 
