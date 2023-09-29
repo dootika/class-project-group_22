@@ -68,11 +68,11 @@ bowler <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=HH
 
 # Shri lank bowlers 
 Shrilanka_Bowlers <- list(length(5))
-Shrilanka_Bowlers[[1]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=PWH+de+Silva&role=all&format=all&groupby=year",8,4,"Wanindu Hasaranga")
-Shrilanka_Bowlers[[2]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=C+Karunaratne&role=all&format=all&groupby=year",4,4,"Chamika Karunaratne")
-Shrilanka_Bowlers[[3]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=M+Theekshana&role=all&format=all&groupby=year",4,4,"Maheesh Theekshana")
-Shrilanka_Bowlers[[4]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=DN+Wellalage&role=all&format=all&groupby=year",3,4,"Dunith Wellalage")
-Shrilanka_Bowlers[[5]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=D+Madushanka&role=all&format=all&groupby=year",2,4,"Dilshan Madushanka")
+Shrilanka_Bowlers[[1]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=PWH+de+Silva&role=all&format=all&groupby=year",4)
+Shrilanka_Bowlers[[2]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=C+Karunaratne&role=all&format=all&groupby=year",4)
+Shrilanka_Bowlers[[3]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=M+Theekshana&role=all&format=all&groupby=year",4)
+Shrilanka_Bowlers[[4]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=DN+Wellalage&role=all&format=all&groupby=year",4)
+Shrilanka_Bowlers[[5]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=D+Madushanka&role=all&format=all&groupby=year",4)
 
 
 
