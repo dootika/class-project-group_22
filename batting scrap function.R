@@ -106,17 +106,16 @@ x <- Scrap_Bating_data("http://www.cricmetric.com/playerstats.py?player=RG+Sharm
 
 
 
-
 # bagladesh bating 
 Bagladesh_batting <- list(length(11))
-Bagladesh_batting[[1]] <-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Shakib+Al+Hasan&role=all&format=all&groupby=year", 17 ,3,"Shakib Al Hasan")
-Bagladesh_batting[[2]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Mehidy+Hasan+Miraz&role=all&format=all&groupby=year",row_number = 8,3,name = "Mehidy Hasan")
-Bagladesh_batting[[3]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Nurul+Hasan&role=all&format=all&groupby=year",row_number = 5,3,name = "Nurul Hasan")
-Bagladesh_batting[[4]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Najmul+Hossain+Shant&role=all&format=all&groupby=year",6,3,"Najmul Hossain Shant")
-Bagladesh_batting[[5]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Mosaddek+Hossain&role=all&format=all&groupby=year",7,3,name = "Mosaddek Hossain")
-Bagladesh_batting[[6]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Yasir+Ali&role=all&format=all&groupby=year",3,3,name = "Yasir Ali")
-Bagladesh_batting[[7]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Sabbir+Rahman&role=all&format=all&groupby=year",7,3,"Sabbir Rahman")
-Bagladesh_batting[[8]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Mustafizur+Rahman&role=all&format=all&groupby=year",9,3,"Mustafizur+Rahman")
-Bagladesh_batting[[9]] <- Scrap_Bating_data("http://www.cricmetric.com/playerstats.py?player=Taskin+Ahmed&role=all&format=all&groupby=year",8,3,"Taskin+Ahmed")
-Bagladesh_batting[[10]] <- Scrap_Bating_data("http://www.cricmetric.com/playerstats.py?player=Afif+Hossain&role=all&format=all&groupby=year",5,1,"Afif Hossai")
-Bagladesh_batting[[11]] <- Scrap_Bating_data("http://www.cricmetric.com/playerstats.py?player=Hasan+Mahmud&role=all&format=all&groupby=year",4,1,"Hasan Mahmud")
+Bagladesh_batting[[1]] <-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Shakib+Al+Hasan&role=all&format=all&groupby=year",3)
+Bagladesh_batting[[2]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Mehidy+Hasan+Miraz&role=all&format=all&groupby=year",3)
+Bagladesh_batting[[3]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Nurul+Hasan&role=all&format=all&groupby=year",3)
+Bagladesh_batting[[4]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Najmul+Hossain+Shant&role=all&format=all&groupby=year",3)
+Bagladesh_batting[[5]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Mosaddek+Hossain&role=all&format=all&groupby=year",3)
+Bagladesh_batting[[6]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Yasir+Ali&role=all&format=all&groupby=year",3)
+Bagladesh_batting[[7]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Sabbir+Rahman&role=all&format=all&groupby=year",3)
+Bagladesh_batting[[8]] <- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Mustafizur+Rahman&role=all&format=all&groupby=year",3)
+Bagladesh_batting[[9]] <- Scrap_Bating_data("http://www.cricmetric.com/playerstats.py?player=Taskin+Ahmed&role=all&format=all&groupby=year",3)
+Bagladesh_batting[[10]] <- Scrap_Bating_data("http://www.cricmetric.com/playerstats.py?player=Afif+Hossain&role=all&format=all&groupby=year",1)
+Bagladesh_batting[[11]] <- Scrap_Bating_data("http://www.cricmetric.com/playerstats.py?player=Hasan+Mahmud&role=all&format=all&groupby=year",1)
