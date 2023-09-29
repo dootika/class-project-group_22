@@ -5,15 +5,17 @@ library(ggplot2)
 library(reshape2)
 
 
-Scrap_Bating_data <- function(link , row_number,N,name){
-  
-  
+Scrap_Bating_data <- function(link ,N){
+  name <- read_html(link) %>% html_element(".panel-heading") %>% html_text2()
   data <- read_html(link) %>%
     html_table()
   Data <- data[N][[1]]
+  row_number <-dim(Data)[1]
   Data$Runs <-  gsub(pattern = ",",replacement = "",x = Data$Runs)
   Data$Balls <- gsub(pattern = ",",replacement = "",x = Data$Balls)
   Data$'4s' <- gsub(pattern = ",",replacement = "",x = Data$'4s')
+  
+  
   
   Data$Innings <- as.numeric(Data$Innings)
   Data$Runs <- as.numeric(Data$Runs)
@@ -71,9 +73,9 @@ Scrap_Bating_data <- function(link , row_number,N,name){
   x[5] <- Fours
   x[6] <-Sixs
   return(x)
-  
 }
-x <- Scrap_Bating_data("http://www.cricmetric.com/playerstats.py?player=RG+Sharma&role=all&format=all&groupby=year",18,3,"Rohit Sharma")
+x <- Scrap_Bating_data("http://www.cricmetric.com/playerstats.py?player=RG+Sharma&role=all&format=all&groupby=year",3)
+
 
 
 
