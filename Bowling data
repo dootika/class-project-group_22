@@ -15,5 +15,11 @@ Pakistan_bowling[[3]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/pl
 Pakistan_batting[[4]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammad+Nawaz%283%29&role=all&format=all&groupby=year",4)
 Pakistan_bowling[[5]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammad+Wasim%281%29&role=all&format=all&groupby=year",4)
 
-
+# Australia batting
+Australia_batting <- list(length(5))
+Australia_batting[[1]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=PJ+Cummins&role=all&format=all&groupby=year",4)
+Australia_batting[[2]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=SA+Abbott&role=all&format=all&groupby=year",2)
+Australia_batting[[3]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=C+Green&role=all&format=all&groupby=year",4)
+Australia_batting[[4]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=JR+Hazlewood&role=all&format=all&groupby=year",4)
+Australia_batting[[5]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=MR+Marsh&role=all&format=all&groupby=year",4)
 
