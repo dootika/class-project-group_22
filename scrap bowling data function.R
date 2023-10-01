@@ -1,15 +1,11 @@
-library(rvest)
-library(tidyverse)
-library(dplyr)
-library(ggplot2)
-library(reshape2)
-
-Scrap_Bowling_data <- function(link ,N){
-  name <- read_html(link) %>% html_element(".panel-heading") %>% html_text2()
+Scrap_Bowling_data <- function(name){
+  name <- gsub(pattern = " ", replacement = "+", name )
+  link <- paste0("http://www.cricmetric.com/playerstats.py?player=",name,"&role=bowler&format=ODI&groupby=year")
+  # name <- read_html(link) %>% html_element(".panel-heading") %>% html_text2()
   data <- read_html(link) %>%
     html_table()
-  Data <- data[N][[1]]
-  row_number <- row_number <-dim(Data)[1]
+  Data <- data[[1]]
+  row_number <- dim(Data)[1]
   Data$Runs <-  gsub(pattern = ",",replacement = "",x = Data$Runs)
   Data$Overs <- gsub(pattern = ",",replacement = "",x = Data$Overs)
   Data$'4s' <- gsub(pattern = ",",replacement = "",x = Data$'4s')
@@ -29,7 +25,7 @@ Scrap_Bowling_data <- function(link ,N){
     summarise(Year = Year ,
               Runs_per_Inning = round({Runs/Innings},3),
               Wickets_per_Inning_X10 =Wickets/Innings *10 , 
-              )
+    )
   xy <- Main[,c(1,2,3)]
   xy <- melt(xy,"Year")
   
@@ -37,129 +33,12 @@ Scrap_Bowling_data <- function(link ,N){
     geom_bar(stat = "identity", width = 0.5,position = position_dodge(width = 0.7)) + 
     labs(x = "Years" , y = "Number of Wickets Or Runs Per Year ", title =paste0(name,"'s Performance") )
   
-  plot(ggp)
+ 
   xz  <- Data1[c(row_number),]
   some <- as.numeric(xz[1,5]/xz[1,3])
-  
-  return(some/6)
+  output <- list(length(3))
+  output[[1]] <- some/6
+  output[[2]] <- Data
+  output[[3]] <- ggp
+  return(output)
 }
-
-
-bowler <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=HH+Pandya&role=all&format=all&groupby=year",4)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Shri lank bowlers 
-Shrilanka_Bowlers <- list(length(5))
-Shrilanka_Bowlers[[1]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=PWH+de+Silva&role=all&format=all&groupby=year",4)
-Shrilanka_Bowlers[[2]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=C+Karunaratne&role=all&format=all&groupby=year",4)
-Shrilanka_Bowlers[[3]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=M+Theekshana&role=all&format=all&groupby=year",4)
-Shrilanka_Bowlers[[4]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=DN+Wellalage&role=all&format=all&groupby=year",4)
-Shrilanka_Bowlers[[5]] <- Scrap_Bowling_data("http://www.cricmetric.com/playerstats.py?player=D+Madushanka&role=all&format=all&groupby=year",4)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ch <- rep(1:5,10)
-
-# match start Now 
-# tossing a coin
-Coin_Toss <- sample(c("Head","Tail"), size = 1,replace = TRUE)
-if(Coin_Toss == "Head"){
-  # here coin toss is head so assume team one chosse to Bat
-  Runs <- 0
-  ind <- 1
-  # frist over starts here 
-  some <- ch[i]
-   
-    for(i in 1:50){
-      while (ind != 11) {
-        for (j in 1:6){
-          #  Chosing a sample from out or not out  according to the bolwers previous performance 
-          sam <- sample(c("Out", "Not_Out"), 1,replace = TRUE, prob =c(Shrilanka_Bowlers[some][[1]],1-Shrilanka_Bowlers[some][[1]]))
-          
-          if ( sam == "Not_Out"){
-            # if batsman is not out then we take sample about the runs 
-            run <- sample(c(0,1,2,3,4,6),1,replace = TRUE,prob = Bagladesh_batting[ind][[1]])
-            print(run)
-            Runs <- Runs + run
-          } else {
-            print("out")
-            ind <- ind + 1
-            
-          }
-        }
-      }
-    }
-  
-}
-
