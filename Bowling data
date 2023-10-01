@@ -1,19 +1,19 @@
+
 #India bowling 
-India_bowling <- list(length(5))
-India_bowling[[1]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=HH+Pandya&role=all&format=all&groupby=year",4)
-India_bowling[[2]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=SN+Thakur&role=all&format=all&groupby=year",4)
-India_bowling[[3]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=JJ+Bumrah&role=all&format=all&groupby=year",4)
-India_bowling[[4]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Kuldeep+Yadav&role=all&format=all&groupby=year",4)
-India_bowling[[5]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammed+Shami&role=all&format=all&groupby=year",4)
+India_batting <- list(length(5))
+India_batting[[1]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=HH+Pandya&role=all&format=all&groupby=year",4)
+India_batting[[2]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=SN+Thakur&role=all&format=all&groupby=year",4)
+India_batting[[3]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=JJ+Bumrah&role=all&format=all&groupby=year",4)
+India_batting[[4]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Kuldeep+Yadav&role=all&format=all&groupby=year",4)
+India_batting[[5]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammed+Shami&role=all&format=all&groupby=year",4)
 
-
-# Pakistan bowling
-Pakistan_bowling <- list(length(5))
-Pakistan_bowling[[1]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Shadab+Khan&role=all&format=all&groupby=year",4)
-Pakistan_bowling[[2]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Hasan+Ali&role=all&format=all&groupby=year",4)
-Pakistan_bowling[[3]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Haris+Rauf&role=all&format=all&groupby=year",4)
+# Pakistan batting
+Pakistan_batting <- list(length(5))
+Pakistan_batting[[1]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Shadab+Khan&role=all&format=all&groupby=year",4)
+Pakistan_batting[[2]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Hasan+Ali&role=all&format=all&groupby=year",4)
+Pakistan_batting[[3]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Haris+Rauf&role=all&format=all&groupby=year",4)
 Pakistan_batting[[4]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammad+Nawaz%283%29&role=all&format=all&groupby=year",4)
-Pakistan_bowling[[5]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammad+Wasim%281%29&role=all&format=all&groupby=year",4)
+Pakistan_batting[[5]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammad+Wasim%281%29&role=all&format=all&groupby=year",4)
 
 # Australia batting
 Australia_batting <- list(length(5))
@@ -23,3 +23,52 @@ Australia_batting[[3]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/p
 Australia_batting[[4]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=JR+Hazlewood&role=all&format=all&groupby=year",4)
 Australia_batting[[5]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=MR+Marsh&role=all&format=all&groupby=year",4)
 
+
+
+# England batting
+England_batting <- list(length(5))
+England_batting[[1]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=MM+Ali&role=all&format=all&groupby=year",3)
+England_batting[[2]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=SM+Curran&role=all&format=all&groupby=year",3)
+England_batting[[3]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=LS+Livingstone&role=all&format=all&groupby=year",3)
+England_batting[[4]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=AU+Rashid&role=all&format=all&groupby=year",3)
+England_batting[[5]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=BA+Stokes&role=all&format=all&groupby=year",3)
+
+# New Zealand batting
+New_Zealand_batting <- list(length(5))
+New_Zealand_batting[[1]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=TA+Boult&role=all&format=all&groupby=year",3)
+New_Zealand_batting[[2]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=MS+Chapman&role=all&format=all&groupby=year",1)
+New_Zealand_batting[[3]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=LH+Ferguson&role=all&format=all&groupby=year",3)
+New_Zealand_batting[[4]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=MJ+Henry&role=all&format=all&groupby=year",3)
+New_Zealand_batting[[5]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=JDS+Neesham&role=all&format=all&groupby=year",3)
+
+# South Africa batting
+South_Africa_batting <- list(length(5))
+South_Africa_batting[[1]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=M+Jansen&role=all&format=all&groupby=year",3)
+South_Africa_batting[[2]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=AL+Phehlukwayo&role=all&format=all&groupby=year",3)
+South_Africa_batting[[3]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=KA+Maharaj&role=all&format=all&groupby=year",3)
+South_Africa_batting[[4]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=AK+Markram&role=all&format=all&groupby=year",3)
+South_Africa_batting[[5]]<-Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=L+Ngidi&role=all&format=all&groupby=year",3)
+    
+# Sri lanka batting
+Sri_Lanka_batting <- list(length(5))
+Sri_Lanka_batting[[1]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=MD+Shanaka&role=all&format=all&groupby=year",3)
+Sri_Lanka_batting[[2]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=DM+de+Silva&role=all&format=all&groupby=year",3)
+Sri_Lanka_batting[[3]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=MADI+Hemantha&role=all&format=all&groupby=year",1)
+Sri_Lanka_batting[[4]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=DN+Wellalage&role=all&format=all&groupby=year",3)
+Sri_Lanka_batting[[5]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=CAK+Rajitha&role=all&format=all&groupby=year",3)
+  
+# Afghanistan batting
+Afghanistan_batting <- list(length(5))
+Afghanistan_batting[[1]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Rahmat+Shah&role=all&format=all&groupby=year",3)
+Afghanistan_batting[[2]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammad+Nabi&role=all&format=all&groupby=year",3)
+Afghanistan_batting[[3]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Azmatullah+Omarzai&role=all&format=all&groupby=year",1)
+Afghanistan_batting[[4]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Rashid+Khan&role=all&format=all&groupby=year",3)
+Afghanistan_batting[[5]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Noor+Ahmad&role=all&format=all&groupby=year",1)
+  
+# Netherlands batting
+Netherlands_batting <- list(length(5))
+Netherlands_batting[[1]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=BFW+de+Leede&role=all&format=all&groupby=year",1)
+Netherlands_batting[[2]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=RE+van+der+Merwe&role=all&format=all&groupby=year",1)
+Netherlands_batting[[3]] <- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=LV+van+Beek&role=all&format=all&groupby=year",1)
+Netherlands_batting[[4]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=A+Dutt&role=all&format=all&groupby=year",1)
+Netherlands_batting[[5]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=R+Klein&role=all&format=all&groupby=year",1)
