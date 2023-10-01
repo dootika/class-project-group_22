@@ -8,12 +8,12 @@ India_bowling[[5]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playe
 
 
 # Pakistan batting
-Pakistan_batting <- list(length(5))
-Pakistan_batting[[1]]<-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Shadab+Khan&role=all&format=all&groupby=year",4)
-Pakistan_batting[[2]]<-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Hasan+Ali&role=all&format=all&groupby=year",4)
-Pakistan_batting[[3]]<-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Haris+Rauf&role=all&format=all&groupby=year",4)
-Pakistan_batting[[4]]<-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Imam-ul-Haq&role=all&format=all&groupby=year",4)
-Pakistan_batting[[5]]<- Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammad+Wasim%281%29&role=all&format=all&groupby=year",4)
+Pakistan_bowling <- list(length(5))
+Pakistan_bowling[[1]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Shadab+Khan&role=all&format=all&groupby=year",4)
+Pakistan_bowling[[2]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Hasan+Ali&role=all&format=all&groupby=year",4)
+Pakistan_bowling[[3]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Haris+Rauf&role=all&format=all&groupby=year",4)
+Pakistan_bowling[[4]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Imam-ul-Haq&role=all&format=all&groupby=year",4)
+Pakistan_bowling[[5]]<- Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammad+Wasim%281%29&role=all&format=all&groupby=year",4)
 
 
 
