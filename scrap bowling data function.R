@@ -1,6 +1,6 @@
 Scrap_Bowling_data <- function(name){
-  name <- gsub(pattern = " ", replacement = "+", name )
-  link <- paste0("http://www.cricmetric.com/playerstats.py?player=",name,"&role=bowler&format=ODI&groupby=year")
+  name1 <- gsub(pattern = " ", replacement = "+", name )
+  link <- paste0("http://www.cricmetric.com/playerstats.py?player=",name1,"&role=bowler&format=ODI&groupby=year")
   # name <- read_html(link) %>% html_element(".panel-heading") %>% html_text2()
   data <- read_html(link) %>%
     html_table()
