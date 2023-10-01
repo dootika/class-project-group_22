@@ -1,10 +1,10 @@
 #India bowling 
 India_bowling <- list(length(5))
-India_bowling[[1]] <-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=HH+Pandya&role=all&format=all&groupby=year",4)
-India_bowling[[2]] <-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=SN+Thakur&role=all&format=all&groupby=year",4)
-India_bowling[[3]] <-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=JJ+Bumrah&role=all&format=all&groupby=year",4)
-India_bowling[[4]]<-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Kuldeep+Yadav&role=all&format=all&groupby=year",4)
-India_bowling[[5]]<-  Scrap_Bating_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammed+Shami&role=all&format=all&groupby=year",4)
+India_bowling[[1]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=HH+Pandya&role=all&format=all&groupby=year",4)
+India_bowling[[2]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=SN+Thakur&role=all&format=all&groupby=year",4)
+India_bowling[[3]] <-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=JJ+Bumrah&role=all&format=all&groupby=year",4)
+India_bowling[[4]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Kuldeep+Yadav&role=all&format=all&groupby=year",4)
+India_bowling[[5]]<-  Scrap_Bowling_data(link = "http://www.cricmetric.com/playerstats.py?player=Mohammed+Shami&role=all&format=all&groupby=year",4)
 
 
 
