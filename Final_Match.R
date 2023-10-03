@@ -25,7 +25,7 @@ Cricket_Match <- function(Batting_1 ,Bowling_1,Batting_2, Bowling_2 ){
         break
       }
       # I decided that Out and Not Out is in Bowlers Hand and Runs are in Batsman Hand So 
-      # I will take a sample to first deside that it is out or not and call is as a Sam
+      # I will take a sample to first decide that it is out or not and call is as a Sam
       Sam <- sample(c("Out","Not_Out"),1,replace = TRUE,prob = c(Bowling_2[Or][[1]],1-Bowling_2[Or][[1]]))
       # If Sam is Not out then we will decide about the runs
       if(Sam == "Not_Out"){
