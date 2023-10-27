@@ -63,7 +63,7 @@ ui <- fluidPage(
                             tableOutput("h2h")
                           )
                         )
-                      ),
+               ),
                tabPanel("Match Up",
                         sidebarLayout(
                           sidebarPanel(
@@ -79,10 +79,10 @@ ui <- fluidPage(
                             verbatimTextOutput("match_summary")
                           )
                         )
-                    )
+               )
              )
     ),
-  
+    
     tabPanel("Cricket Match", 
              sidebarLayout(
                sidebarPanel(
@@ -92,7 +92,7 @@ ui <- fluidPage(
                  conditionalPanel(
                    condition = "input.team_select_1 == 'new_team'", 
                    selectInput("player_names", "Select Players (exect 11 players):", 
-                               choices = Player_name, multiple = TRUE),
+                               choices = All_Player_Name, multiple = TRUE),
                    span(textOutput("player_counter")),
                    uiOutput("no_of_player")
                  ),
@@ -101,24 +101,23 @@ ui <- fluidPage(
                  conditionalPanel(
                    condition = "input.team_select_2 == 'new_team'", 
                    selectInput("player_names_2", "Select Players (exect 11 players):", 
-                               choices = Player_name, multiple = TRUE),
+                               choices = All_Player_Name, multiple = TRUE),
                    span(textOutput("player_counter_2")),
                    uiOutput("no_of_player_2")
                  ),
                  actionButton("start", "Start Match")
                ),
                mainPanel(
-                  verbatimTextOutput("team_output")
+                 verbatimTextOutput("team_output")
                )
              )
-              # UI components specific to Cricket Match tab
+             # UI components specific to Cricket Match tab
              # Add your UI elements here
     )
   )
 )
 
 server <- function(input, output) {
-  
   team <- reactive({
     input$team
   })
@@ -261,9 +260,6 @@ server <- function(input, output) {
     selectInput("selectb", "Batting or Bowlling :", choices = c("Batting" , "Bowling"))
   })
   
-  
-  
-  
   output$img <- renderPlot({
     img <- image_read(image_links[[input$country]][[input$selectedplayer]])
     plot(img)
@@ -276,7 +272,6 @@ server <- function(input, output) {
   output$plot <- renderPlot({
     Player_Data[[input$country]][[input$selectedplayer]][[input$selectb]][[3]]
   })
-  
   
   
   
@@ -332,9 +327,9 @@ server <- function(input, output) {
     
     
   })
- 
   
- 
+  
+  
 }
 
 shinyApp(ui = ui, server = server)
