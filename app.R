@@ -5,7 +5,8 @@ library(magick)
 library(shinyjs)
 library(shinyalert)
 
-load("../Cricket.RData")
+load("Cricket.RData")
+load("Cricket_Match.RData")
 
 ui <- fluidPage(
   titlePanel("ODI"),
@@ -40,7 +41,7 @@ ui <- fluidPage(
                  conditionalPanel(
                    condition = "input.team_select_1 == 'new_team'", 
                    selectInput("player_names", "Select Players (exect 11 players):", 
-                               choices = All_Player_Name, multiple = TRUE),
+                               choices = Player_name, multiple = TRUE),
                    span(textOutput("player_counter")),
                    uiOutput("no_of_player")
                  ),
@@ -49,7 +50,7 @@ ui <- fluidPage(
                  conditionalPanel(
                    condition = "input.team_select_2 == 'new_team'", 
                    selectInput("player_names_2", "Select Players (exect 11 players):", 
-                               choices = All_Player_Name, multiple = TRUE),
+                               choices = Player_name, multiple = TRUE),
                    span(textOutput("player_counter_2")),
                    uiOutput("no_of_player_2")
                  ),
