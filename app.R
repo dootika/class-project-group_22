@@ -12,6 +12,7 @@ library(gapminder)
 load("Cricket.RData")
 load("Cricket_Match.RData")
 load("Teams_Table.RData")
+load("Cricket_Coord.RData")
 
 ui <- fluidPage(
   titlePanel("ODI"),
@@ -34,6 +35,22 @@ ui <- fluidPage(
     ),
     tabPanel("Team ODI Data", 
              tabsetPanel(
+               tabPanel("World View",
+                        sidebarLayout(
+                          sidebarPanel(
+                            sliderInput(
+                              inputId = "y_world",
+                              label = "Years : ",
+                              min = min(year(table$`Match Date`)),
+                              max = max(year(table$`Match Date`)),
+                              value = c(min(year(table$`Match Date`)), max(year(table$`Match Date`)))
+                            )
+                          ),
+                          mainPanel(
+                            plotOutput("world")
+                          )
+                        )
+               ),
                tabPanel("Team Overview",
                         sidebarLayout(
                           sidebarPanel(
@@ -124,6 +141,35 @@ server <- function(input, output) {
   
   match_table <- reactive({
     team_1_table() %>% filter(Opponent == team_2())
+  })
+  
+  y_world_1 <- reactive({
+    t <- input$y_world
+    t[1]
+  })
+  
+  y_world_2 <- reactive({
+    t <- input$y_world
+    t[2]
+  })
+  
+  output$world <- renderPlot({
+    teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
+    W_L <- NULL
+    t <- table %>% filter((year(`Match Date`) >= y_world_1()) & (year(`Match Date`) <= y_world_2()))
+    for (i in 1:length(teams)) {
+      win <- sum(t$Winner == teams[i])
+      loss <- sum(t$Loser == teams[i])
+      if (loss == 0) {
+        W_L <- append(W_L, NA)
+      }
+      else {
+        W_L <- append(W_L, win/loss)
+      }
+    }
+    WL <- data.frame(teams, W_L)
+    data <- left_join(coord, WL, by = "teams")
+    ggplot(data, aes(x = long, y = lat, group = group)) + geom_polygon(aes(fill = W_L), color = "black")
   })
   
   output$years <- renderUI({
