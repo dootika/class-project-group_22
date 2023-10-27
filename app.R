@@ -4,9 +4,14 @@ library(png)
 library(magick)
 library(shinyjs)
 library(shinyalert)
+library(dplyr)
+library(tidyverse)
+library(gtsummary)
+library(gapminder)
 
 load("Cricket.RData")
 load("Cricket_Match.RData")
+load("Teams_Table.RData")
 
 ui <- fluidPage(
   titlePanel("ODI"),
@@ -28,8 +33,37 @@ ui <- fluidPage(
              )
     ),
     tabPanel("Team ODI Data", 
-             # UI components specific to Team ODI Data tab
-             # Add your UI elements here
+             tabsetPanel(
+               tabPanel("Team Overview",
+                        sidebarLayout(
+                          sidebarPanel(
+                            selectInput("team", "Select Team : ",
+                                        choices = unique(table$Winner)),
+                            uiOutput("years")
+                          ),
+                          mainPanel(
+                            verbatimTextOutput("team_summary"),
+                            tableOutput("h2h")
+                          )
+                        )
+                      ),
+               tabPanel("Match Up",
+                        sidebarLayout(
+                          sidebarPanel(
+                            selectInput("team1", "Select Team 1 : ",
+                                        choices = unique(table$Winner),
+                                        selected = "Australia"),
+                            selectInput("team2", "Select Team 2 : ",
+                                        choices = unique(table$Winner),
+                                        selected = "England"),
+                            uiOutput("years_match")
+                          ),
+                          mainPanel(
+                            verbatimTextOutput("match_summary")
+                          )
+                        )
+                    )
+             )
     ),
   
     tabPanel("Cricket Match", 
@@ -67,6 +101,112 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
+  
+  team <- reactive({
+    input$team
+  })
+  
+  team_1 <- reactive({
+    input$team1
+  })
+  
+  team_2 <- reactive({
+    input$team2
+  })
+  
+  team_table <- reactive({
+    team_filter(team())
+  })
+  
+  team_1_table <- reactive({
+    team_filter(team_1())
+  })
+  
+  match_table <- reactive({
+    team_1_table() %>% filter(Opponent == team_2())
+  })
+  
+  output$years <- renderUI({
+    sliderInput(
+      inputId = "y",
+      label = "Years : ",
+      min = min(year(team_table()$`Match Date`)),
+      max = max(year(team_table()$`Match Date`)),
+      value = c(min(year(team_table()$`Match Date`)), max(year(team_table()$`Match Date`)))
+    )
+  })
+  
+  output$years_match <- renderUI({
+    sliderInput(
+      inputId = "ym",
+      label = "Years : ",
+      min = min(year(match_table()$`Match Date`)),
+      max = max(year(match_table()$`Match Date`)),
+      value = c(min(year(match_table()$`Match Date`)), max(year(match_table()$`Match Date`)))
+    )
+  })
+  
+  year_team_1 <- reactive({
+    t <- input$y
+    t[1]
+  })
+  year_team_2 <- reactive({
+    t <- input$y
+    t[2]
+  })
+  
+  year_match_1 <- reactive({
+    t <- input$ym
+    t[1]
+  })
+  
+  year_match_2 <- reactive({
+    t <- input$ym
+    t[2]
+  })
+  
+  output$team_summary <- renderPrint({
+    t <- team_table()
+    t1 <- (t %>% filter((as.integer(year(t$'Match Date')) >= year_team_1()) & (as.integer(year(t$'Match Date')) <= year_team_2())))
+    colnames(t1)[3] <- paste0(team(), " Score")
+    colnames(t1)[4] <- "Opponent Score"
+    colnames(t1)[7] <- "Winning Score"
+    colnames(t1)[8] <- "Losing Score"
+    t1 <- t1[c(3, 4, 7, 8, 11)]
+    summary(t1)
+  })
+  
+  output$h2h <- renderTable({
+    t2 <- team_table()
+    t <- t2 %>% filter((as.integer(year(t2$'Match Date')) >= year_team_1()) & (as.integer(year(t2$'Match Date')) <= year_team_2()))
+    Team <- unique(t$Opponent)
+    other <- Team
+    Won <- NULL
+    Lost <- NULL
+    for (i in 1:length(other)) {
+      t1 <- t %>% filter(Opponent == other[i])
+      Won <- append(Won, length((t1 %>% filter(Winner == team()))$Winner))
+      Lost <- append(Lost, length((t1 %>% filter(Winner == other[i]))$Winner))
+    }
+    
+    d <- data.frame(Team, Won, Lost, Won/Lost)
+    colnames(d)[4] <- "W_L Ratio"
+    d$'W_L Ratio'[is.infinite(d$'W_L Ratio')] <- NA
+    d$'W_L Ratio' <- as.double(d$'W_L Ratio')
+    d %>% arrange(desc(d$'W_L Ratio'))
+  })
+  
+  output$match_summary <- renderPrint({
+    t <- match_table()
+    t <- t %>% filter((year(`Match Date`) >= year_match_1()) & (year(`Match Date`) <= year_match_2()))
+    colnames(t)[3] <- paste0(team_1(), " Score")
+    colnames(t)[4] <- paste0(team_2(), " Score")
+    colnames(t)[7] <- "Winning Score"
+    colnames(t)[8] <- "Losing Score"
+    t <- t[c(3, 4, 7, 8, 11)]
+    summary(t)
+  })
+  
   output$player <- renderUI({
     selectInput("selectedplayer", "Select a Player:", choices = Player_name[[input$country]])
   }) 
@@ -74,6 +214,9 @@ server <- function(input, output) {
   output$ballorbat <- renderUI({
     selectInput("selectb", "Batting or Bowlling :", choices = c("Batting" , "Bowling"))
   })
+  
+  
+  
   
   output$img <- renderPlot({
     img <- image_read(image_links[[input$country]][[input$selectedplayer]])
@@ -87,6 +230,7 @@ server <- function(input, output) {
   output$plot <- renderPlot({
     Player_Data[[input$country]][[input$selectedplayer]][[input$selectb]][[3]]
   })
+  
   
   
   
