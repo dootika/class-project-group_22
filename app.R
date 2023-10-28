@@ -8,6 +8,7 @@ library(dplyr)
 library(tidyverse)
 library(gtsummary)
 library(gapminder)
+library(gt)
 
 load("Cricket.RData")
 load("Cricket_Match.RData")
@@ -47,7 +48,8 @@ ui <- fluidPage(
                             )
                           ),
                           mainPanel(
-                            plotOutput("world")
+                            plotOutput("world"),
+                            tableOutput("world_table")
                           )
                         )
                ),
@@ -60,7 +62,7 @@ ui <- fluidPage(
                           ),
                           mainPanel(
                             verbatimTextOutput("team_summary"),
-                            tableOutput("h2h")
+                            gt_output("h2h")
                           )
                         )
                ),
@@ -152,6 +154,24 @@ server <- function(input, output) {
     t[2]
   })
   
+  output$world_table <- renderTable({
+    teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
+    W_L <- NULL
+    t <- table %>% filter((year(`Match Date`) >= y_world_1()) & (year(`Match Date`) <= y_world_2()))
+    for (i in 1:length(teams)) {
+      win <- sum(t$Winner == teams[i])
+      loss <- sum(t$Loser == teams[i])
+      if (loss == 0) {
+        W_L <- append(W_L, NA)
+      }
+      else {
+        W_L <- append(W_L, win/loss)
+      }
+    }
+    WL <- data.frame(teams, W_L)
+    WL %>% arrange(desc(W_L)) %>% filter(!is.na(W_L))
+  })
+  
   output$world <- renderPlot({
     teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
     W_L <- NULL
@@ -217,28 +237,40 @@ server <- function(input, output) {
     colnames(t1)[4] <- "Opponent Score"
     colnames(t1)[7] <- "Winning Score"
     colnames(t1)[8] <- "Losing Score"
-    t1 <- t1[c(3, 4, 7, 8, 11)]
+    t1 <- t1[c(3, 4, 7, 8, 12)]
     summary(t1)
   })
   
-  output$h2h <- renderTable({
+  output$h2h <- render_gt({
     t2 <- team_table()
     t <- t2 %>% filter((as.integer(year(t2$'Match Date')) >= year_team_1()) & (as.integer(year(t2$'Match Date')) <= year_team_2()))
     Team <- unique(t$Opponent)
     other <- Team
     Won <- NULL
     Lost <- NULL
+    Won_Bat <- NULL
+    Won_Bowl <- NULL
+    Lost_Bat <- NULL
+    Lost_Bowl <- NULL
     for (i in 1:length(other)) {
       t1 <- t %>% filter(Opponent == other[i])
       Won <- append(Won, length((t1 %>% filter(Winner == team()))$Winner))
+      Won_Bat <- append(Won_Bat, length((t1 %>% filter((Winner == team()) & (Winning_Innings == "Batting")))$Winner))
+      Won_Bowl <- append(Won_Bowl, length((t1 %>% filter((Winner == team()) & (Winning_Innings == "Bowling")))$Winner))
+      Lost_Bat <- append(Lost_Bat, length((t1 %>% filter((Winner == other[i]) & (Winning_Innings == "Bowling")))$Winner))
+      Lost_Bowl <- append(Lost_Bowl, length((t1 %>% filter((Winner == other[i]) & (Winning_Innings == "Batting")))$Winner))
       Lost <- append(Lost, length((t1 %>% filter(Winner == other[i]))$Winner))
     }
     
-    d <- data.frame(Team, Won, Lost, Won/Lost)
-    colnames(d)[4] <- "W_L Ratio"
+    d <- data.frame(Team, Won_Bat, Lost_Bat, Won_Bowl, Lost_Bowl, Won/Lost)
+    colnames(d)[6] <- "W_L Ratio"
     d$'W_L Ratio'[is.infinite(d$'W_L Ratio')] <- NA
     d$'W_L Ratio' <- as.double(d$'W_L Ratio')
-    d %>% arrange(desc(d$'W_L Ratio'))
+    d <- d %>% arrange(desc(d$'W_L Ratio'))
+    d <- gt(d)
+    tab <- tab_spanner(d, label = "Batting", columns = ends_with("Bat"))
+    tab <- tab_spanner(tab, label = "Chasing", columns = ends_with("Bowl"))
+    tab |> cols_label(starts_with("Won") ~ "Won", starts_with("Lost") ~ "Lost")
   })
   
   output$match_summary <- renderPrint({
@@ -248,7 +280,7 @@ server <- function(input, output) {
     colnames(t)[4] <- paste0(team_2(), " Score")
     colnames(t)[7] <- "Winning Score"
     colnames(t)[8] <- "Losing Score"
-    t <- t[c(3, 4, 7, 8, 11)]
+    t <- t[c(3, 4, 7, 8, 12)]
     summary(t)
   })
   
