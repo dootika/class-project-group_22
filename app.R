@@ -5,15 +5,8 @@ library(magick)
 library(shinyjs)
 library(shinyalert)
 library(dplyr)
-library(tidyverse)
-library(gtsummary)
-library(gapminder)
-library(gt)
 
-load("Cricket.RData")
-load("Cricket_Match.RData")
-load("Teams_Table.RData")
-load("Cricket_Coord.RData")
+load("../Cricket.RData")
 
 ui <- fluidPage(
   titlePanel("ODI"),
@@ -35,73 +28,27 @@ ui <- fluidPage(
              )
     ),
     tabPanel("Team ODI Data", 
-             tabsetPanel(
-               tabPanel("World View",
-                        sidebarLayout(
-                          sidebarPanel(
-                            sliderInput(
-                              inputId = "y_world",
-                              label = "Years : ",
-                              min = min(year(table$`Match Date`)),
-                              max = max(year(table$`Match Date`)),
-                              value = c(min(year(table$`Match Date`)), max(year(table$`Match Date`)))
-                            )
-                          ),
-                          mainPanel(
-                            plotOutput("world"),
-                            tableOutput("world_table")
-                          )
-                        )
-               ),
-               tabPanel("Team Overview",
-                        sidebarLayout(
-                          sidebarPanel(
-                            selectInput("team", "Select Team : ",
-                                        choices = unique(table$Winner)),
-                            uiOutput("years")
-                          ),
-                          mainPanel(
-                            verbatimTextOutput("team_summary"),
-                            gt_output("h2h")
-                          )
-                        )
-               ),
-               tabPanel("Match Up",
-                        sidebarLayout(
-                          sidebarPanel(
-                            selectInput("team1", "Select Team 1 : ",
-                                        choices = unique(table$Winner),
-                                        selected = "Australia"),
-                            selectInput("team2", "Select Team 2 : ",
-                                        choices = unique(table$Winner),
-                                        selected = "England"),
-                            uiOutput("years_match")
-                          ),
-                          mainPanel(
-                            verbatimTextOutput("match_summary")
-                          )
-                        )
-               )
-             )
+             # UI components specific to Team ODI Data tab
+             # Add your UI elements here
     ),
-    
+  
     tabPanel("Cricket Match", 
              sidebarLayout(
                sidebarPanel(
                  span(textOutput("hint")),
                  selectInput("team_select_1", "Select team 1", 
-                             choices = c(Country_name, "new_team")),
+                             choices = c(Country_name, "new_team (1)")),
                  conditionalPanel(
-                   condition = "input.team_select_1 == 'new_team'", 
+                   condition = "input.team_select_1 == 'new_team (1)'", 
                    selectInput("player_names", "Select Players (exect 11 players):", 
                                choices = All_Player_Name, multiple = TRUE),
                    span(textOutput("player_counter")),
                    uiOutput("no_of_player")
                  ),
                  selectInput("team_select_2", "Select team 2", 
-                             choices = c(Country_name, "new_team")),
+                             choices = c(Country_name, "new_team (2)")),
                  conditionalPanel(
-                   condition = "input.team_select_2 == 'new_team'", 
+                   condition = "input.team_select_2 == 'new_team (2)'", 
                    selectInput("player_names_2", "Select Players (exect 11 players):", 
                                choices = All_Player_Name, multiple = TRUE),
                    span(textOutput("player_counter_2")),
@@ -110,180 +57,29 @@ ui <- fluidPage(
                  actionButton("start", "Start Match")
                ),
                mainPanel(
-                 verbatimTextOutput("team_output")
+                 h1(textOutput("winorloss",container = span)),
+                 h2(textOutput("team1",container = span)),
+                 h3(textOutput("batting",container = span)),
+                 dataTableOutput("team1_table"),
+                 h3(textOutput("bowling",container = span)),
+                 dataTableOutput("team1_table_"),
+                 
+                 h2(textOutput("team2",container = span)),
+                 h3(textOutput("batting_",container = span)),
+                 dataTableOutput("team2_table"),
+                 h3(textOutput("bowling_",container = span)),
+                 dataTableOutput("team2_table_"),
+                 
+                  
                )
              )
-             # UI components specific to Cricket Match tab
+              # UI components specific to Cricket Match tab
              # Add your UI elements here
     )
   )
 )
 
 server <- function(input, output) {
-  team <- reactive({
-    input$team
-  })
-  
-  team_1 <- reactive({
-    input$team1
-  })
-  
-  team_2 <- reactive({
-    input$team2
-  })
-  
-  team_table <- reactive({
-    team_filter(team())
-  })
-  
-  team_1_table <- reactive({
-    team_filter(team_1())
-  })
-  
-  match_table <- reactive({
-    team_1_table() %>% filter(Opponent == team_2())
-  })
-  
-  y_world_1 <- reactive({
-    t <- input$y_world
-    t[1]
-  })
-  
-  y_world_2 <- reactive({
-    t <- input$y_world
-    t[2]
-  })
-  
-  output$world_table <- renderTable({
-    teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
-    W_L <- NULL
-    t <- table %>% filter((year(`Match Date`) >= y_world_1()) & (year(`Match Date`) <= y_world_2()))
-    for (i in 1:length(teams)) {
-      win <- sum(t$Winner == teams[i])
-      loss <- sum(t$Loser == teams[i])
-      if (loss == 0) {
-        W_L <- append(W_L, NA)
-      }
-      else {
-        W_L <- append(W_L, win/loss)
-      }
-    }
-    WL <- data.frame(teams, W_L)
-    WL %>% arrange(desc(W_L)) %>% filter(!is.na(W_L))
-  })
-  
-  output$world <- renderPlot({
-    teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
-    W_L <- NULL
-    t <- table %>% filter((year(`Match Date`) >= y_world_1()) & (year(`Match Date`) <= y_world_2()))
-    for (i in 1:length(teams)) {
-      win <- sum(t$Winner == teams[i])
-      loss <- sum(t$Loser == teams[i])
-      if (loss == 0) {
-        W_L <- append(W_L, NA)
-      }
-      else {
-        W_L <- append(W_L, win/loss)
-      }
-    }
-    WL <- data.frame(teams, W_L)
-    data <- left_join(coord, WL, by = "teams")
-    ggplot(data, aes(x = long, y = lat, group = group)) + geom_polygon(aes(fill = W_L), color = "black")
-  })
-  
-  output$years <- renderUI({
-    sliderInput(
-      inputId = "y",
-      label = "Years : ",
-      min = min(year(team_table()$`Match Date`)),
-      max = max(year(team_table()$`Match Date`)),
-      value = c(min(year(team_table()$`Match Date`)), max(year(team_table()$`Match Date`)))
-    )
-  })
-  
-  output$years_match <- renderUI({
-    sliderInput(
-      inputId = "ym",
-      label = "Years : ",
-      min = min(year(match_table()$`Match Date`)),
-      max = max(year(match_table()$`Match Date`)),
-      value = c(min(year(match_table()$`Match Date`)), max(year(match_table()$`Match Date`)))
-    )
-  })
-  
-  year_team_1 <- reactive({
-    t <- input$y
-    t[1]
-  })
-  year_team_2 <- reactive({
-    t <- input$y
-    t[2]
-  })
-  
-  year_match_1 <- reactive({
-    t <- input$ym
-    t[1]
-  })
-  
-  year_match_2 <- reactive({
-    t <- input$ym
-    t[2]
-  })
-  
-  output$team_summary <- renderPrint({
-    t <- team_table()
-    t1 <- (t %>% filter((as.integer(year(t$'Match Date')) >= year_team_1()) & (as.integer(year(t$'Match Date')) <= year_team_2())))
-    colnames(t1)[3] <- paste0(team(), " Score")
-    colnames(t1)[4] <- "Opponent Score"
-    colnames(t1)[7] <- "Winning Score"
-    colnames(t1)[8] <- "Losing Score"
-    t1 <- t1[c(3, 4, 7, 8, 12)]
-    summary(t1)
-  })
-  
-  output$h2h <- render_gt({
-    t2 <- team_table()
-    t <- t2 %>% filter((as.integer(year(t2$'Match Date')) >= year_team_1()) & (as.integer(year(t2$'Match Date')) <= year_team_2()))
-    Team <- unique(t$Opponent)
-    other <- Team
-    Won <- NULL
-    Lost <- NULL
-    Won_Bat <- NULL
-    Won_Bowl <- NULL
-    Lost_Bat <- NULL
-    Lost_Bowl <- NULL
-    for (i in 1:length(other)) {
-      t1 <- t %>% filter(Opponent == other[i])
-      Won <- append(Won, length((t1 %>% filter(Winner == team()))$Winner))
-      Won_Bat <- append(Won_Bat, length((t1 %>% filter((Winner == team()) & (Winning_Innings == "Batting")))$Winner))
-      Won_Bowl <- append(Won_Bowl, length((t1 %>% filter((Winner == team()) & (Winning_Innings == "Bowling")))$Winner))
-      Lost_Bat <- append(Lost_Bat, length((t1 %>% filter((Winner == other[i]) & (Winning_Innings == "Bowling")))$Winner))
-      Lost_Bowl <- append(Lost_Bowl, length((t1 %>% filter((Winner == other[i]) & (Winning_Innings == "Batting")))$Winner))
-      Lost <- append(Lost, length((t1 %>% filter(Winner == other[i]))$Winner))
-    }
-    
-    d <- data.frame(Team, Won_Bat, Lost_Bat, Won_Bowl, Lost_Bowl, Won/Lost)
-    colnames(d)[6] <- "W_L Ratio"
-    d$'W_L Ratio'[is.infinite(d$'W_L Ratio')] <- NA
-    d$'W_L Ratio' <- as.double(d$'W_L Ratio')
-    d <- d %>% arrange(desc(d$'W_L Ratio'))
-    d <- gt(d)
-    tab <- tab_spanner(d, label = "Batting", columns = ends_with("Bat"))
-    tab <- tab_spanner(tab, label = "Chasing", columns = ends_with("Bowl"))
-    tab |> cols_label(starts_with("Won") ~ "Won", starts_with("Lost") ~ "Lost")
-  })
-  
-  output$match_summary <- renderPrint({
-    t <- match_table()
-    t <- t %>% filter((year(`Match Date`) >= year_match_1()) & (year(`Match Date`) <= year_match_2()))
-    colnames(t)[3] <- paste0(team_1(), " Score")
-    colnames(t)[4] <- paste0(team_2(), " Score")
-    colnames(t)[7] <- "Winning Score"
-    colnames(t)[8] <- "Losing Score"
-    t <- t[c(3, 4, 7, 8, 12)]
-    summary(t)
-  })
-  
   output$player <- renderUI({
     selectInput("selectedplayer", "Select a Player:", choices = Player_name[[input$country]])
   }) 
@@ -297,6 +93,7 @@ server <- function(input, output) {
     plot(img)
   })
   
+ 
   output$data <- renderTable({
     Player_Data[[input$country]][[input$selectedplayer]][[input$selectb]][[2]]
   })
@@ -331,7 +128,7 @@ server <- function(input, output) {
   
   
   observeEvent(input$start, {
-    if (input$team_select_1 == 'new_team'){
+    if (input$team_select_1 == 'new_team (1)'){
       pyr_1 <- input$player_names
       team_1 <- NULL
       for (pyr in pyr_1){
@@ -342,7 +139,7 @@ server <- function(input, output) {
       team_1 <- Player_Data[[input$team_select_1]]
     }
     
-    if (input$team_select_2 == 'new_team'){
+    if (input$team_select_2 == 'new_team (2)'){
       pyr_2 <- input$player_names_2
       team_2 <- NULL
       for (pyr in pyr_2){
@@ -352,16 +149,68 @@ server <- function(input, output) {
       pyr_2 <- Player_name[[input$team_select_2]]
       team_2 <- Player_Data[[input$team_select_2]]
     }
+    data <- Cricket_Match(team_1,team_2,pyr_1,pyr_2)
     
-    output$team_output <- renderPrint({
-      print(Cricket_Match(team_1,team_2,pyr_1,pyr_2))
+    
+    
+    
+    output$team1 <- renderText({
+      paste("First inning",":")
     })
     
+    output$batting <- renderText({
+      paste("Batting :",input$team_select_1)
+    })
+    output$team1_table <- renderDataTable({
+     
+      data[[1]][[1]]
+    })
+   
+    output$bowling <- renderText({
+      paste("Bowling :",input$team_select_2)
+    })
+    output$team1_table_ <- renderDataTable({
+      
+      data[[1]][[2]]
+    })
+    
+    output$team2 <- renderText({
+      paste("Second inning",":")
+    })
+    
+    output$batting_ <- renderText({
+      paste("Batting :",input$team_select_2)
+    })
+    output$team2_table <- renderDataTable({
+      
+      data[[2]][[1]]
+    })
+    
+    output$bowling_ <- renderText({
+      paste("Bowling :",input$team_select_1)
+    })
+    output$team2_table_ <- renderDataTable({
+      
+      data[[2]][[2]]
+    })
+
+    
+    result <- substr(data[[3]],1,6)
+    res <- substr(data[[3]],7,55)
+    if(result == "Team 1"){
+      output$winorloss <- renderText({
+        paste(input$team_select_1,res)
+      })
+    } else {
+      output$winorloss <- renderText({
+        paste(input$team_select_2,res)
+      })
+    }
     
   })
+ 
   
-  
-  
+ 
 }
 
 shinyApp(ui = ui, server = server)
