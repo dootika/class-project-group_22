@@ -5,20 +5,20 @@ library(magick)
 library(shinyjs)
 library(shinyalert)
 library(dplyr)
-library(tidyverse)
-library(gtsummary)
-library(gapminder)
+library(shinythemes)
 library(gt)
-library(ggThemeAssist)
 
 load("../Cricket.RData")
-load("../Cricket_Match.RData")
-load("../Teams_Table.RData")
-load("../Cricket_Coord.RData")
-happy <- read.csv("../Happiness_Index.csv")
-gdp <- read.csv("../gdp_per_capita.csv")
 
-ui <- fluidPage(
+
+
+
+
+year <- function(da) {
+  return(as.integer(format(da, "%Y")))
+}
+
+ui <- fluidPage(theme = shinytheme("superhero"),
   titlePanel("ODI"),
   tabsetPanel(
     tabPanel("Player ODI Data",
@@ -85,6 +85,33 @@ ui <- fluidPage(
                           )
                         )
                ),
+               tabPanel("Happiness Index",
+                        tabsetPanel(
+                          tabPanel("General",
+                                   sidebarLayout(
+                                     sidebarPanel(
+                                       checkboxGroupInput(inputId = "teams_happy_general", label = "Countries",
+                                                          choices = unique(table$Loser)[unique(table$Loser) %in% unique(happy$Country)],
+                                                          selected = c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Ireland", "Afghanistan"))
+                                     ),
+                                     mainPanel(
+                                       plotOutput("bar_happy")
+                                     )
+                                   )
+                          ),
+                          tabPanel("Country",
+                                   sidebarLayout(
+                                     sidebarPanel(
+                                       selectInput("team_happy", "Select Team : ",
+                                                   choices = unique(table$Loser)[unique(table$Loser) %in% unique(happy$Country)],
+                                                   selected = "India")
+                                     ),
+                                     mainPanel(
+                                       plotOutput("happy_plot")
+                                     )
+                                   ))
+                        )
+               ),
                tabPanel("GDP",
                         tabsetPanel(
                           tabPanel("General",
@@ -98,7 +125,7 @@ ui <- fluidPage(
                                        plotOutput("bar_gdp")
                                      )
                                    )
-                                  ),
+                          ),
                           tabPanel("Country",
                                    sidebarLayout(
                                      sidebarPanel(
@@ -114,24 +141,24 @@ ui <- fluidPage(
                )
              )
     ),
-    
+  
     tabPanel("Cricket Match", 
              sidebarLayout(
                sidebarPanel(
                  span(textOutput("hint")),
                  selectInput("team_select_1", "Select team 1", 
-                             choices = c(Country_name, "new_team")),
+                             choices = c(Country_name, "new_team (1)")),
                  conditionalPanel(
-                   condition = "input.team_select_1 == 'new_team'", 
+                   condition = "input.team_select_1 == 'new_team (1)'", 
                    selectInput("player_names", "Select Players (exect 11 players):", 
                                choices = All_Player_Name, multiple = TRUE),
                    span(textOutput("player_counter")),
                    uiOutput("no_of_player")
                  ),
                  selectInput("team_select_2", "Select team 2", 
-                             choices = c(Country_name, "new_team")),
+                             choices = c(Country_name, "new_team (2)")),
                  conditionalPanel(
-                   condition = "input.team_select_2 == 'new_team'", 
+                   condition = "input.team_select_2 == 'new_team (2)'", 
                    selectInput("player_names_2", "Select Players (exect 11 players):", 
                                choices = All_Player_Name, multiple = TRUE),
                    span(textOutput("player_counter_2")),
@@ -140,16 +167,31 @@ ui <- fluidPage(
                  actionButton("start", "Start Match")
                ),
                mainPanel(
-                 verbatimTextOutput("team_output")
+                 h1(textOutput("winorloss",container = span)),
+                 h2(textOutput("team1",container = span)),
+                 h3(textOutput("batting",container = span)),
+                 dataTableOutput("team1_table"),
+                 plotOutput("team_1_plot_bat"),
+                 h3(textOutput("bowling",container = span)),
+                 dataTableOutput("team1_table_"),
+                 plotOutput("team_1_plot_bal"),
+                 
+                 h2(textOutput("team2",container = span)),
+                 h3(textOutput("batting_",container = span)),
+                 dataTableOutput("team2_table"),
+                 plotOutput("team_2_plot_bat"),
+                 h3(textOutput("bowling_",container = span)),
+                 dataTableOutput("team2_table_"),
+                 plotOutput("team_2_plot_bal"),
+                 
+                  
                )
              )
-             # UI components specific to Cricket Match tab
+              # UI components specific to Cricket Match tab
              # Add your UI elements here
     )
   )
-
 )
-
 
 server <- function(input, output) {
   team <- reactive({
@@ -164,6 +206,9 @@ server <- function(input, output) {
     input$team2
   })
   
+  team_happy <- reactive({
+    input$team_happy
+  })
   
   team_gdp <- reactive({
     input$team_gdp
@@ -177,12 +222,20 @@ server <- function(input, output) {
     input$teams_gdp_general
   })
   
+  teams_happy_general <- reactive({
+    input$teams_happy_general
+  })
+  
   team_1_table <- reactive({
     team_filter(team_1())
   })
   
   match_table <- reactive({
     team_1_table() %>% filter(Opponent == team_2())
+  })
+  
+  team_happy_table <- reactive({
+    team_filter(team_happy())
   })
   
   y_world_1 <- reactive({
@@ -253,6 +306,14 @@ server <- function(input, output) {
     )
   })
   
+  output$years_happy <- renderUI({
+    sliderInput(
+      inputId = "yh",
+      label = "Years : ",
+      min = max(min(year(team_happy_table()$`Match Date`)), min((happy %>% filter(Country == team_happy()))$Year)),
+      max = min(max(year(team_happy_table()$`Match Date`)), max((happy %>% filter(Country == team_happy()))$Year)),
+      value = c(max(min(year(team_happy_table()$`Match Date`)), min((happy %>% filter(Country == team_happy()))$Year)), min(max(year(team_happy_table()$`Match Date`)), max((happy %>% filter(Country == team_happy()))$Year))))
+  })
   
   year_team_1 <- reactive({
     t <- input$y
@@ -273,6 +334,9 @@ server <- function(input, output) {
     t[2]
   })
   
+  years_happiness <- reactive({
+    input$yh
+  })
   
   output$team_summary <- renderPrint({
     t <- team_table()
@@ -329,6 +393,66 @@ server <- function(input, output) {
     summary(t)
   })
   
+  output$happy_plot <- renderPlot({
+    y1 <- happy %>% filter(Country == team_happy())
+    y2 <- team_filter(team_happy())
+    Year <- NULL
+    for (i in unique(y1$Year)) {
+      if (i %in% unique(year(y2$'Match Date'))) {
+        Year <- append(Year, i)
+      }
+    }
+    Win_To_Loss <- NULL
+    Happiness <- NULL
+    for (i in Year) {
+      hap <- y1$Index[which(y1$Year == i, arr.ind = TRUE)]
+      Happiness <- append(Happiness, as.double(hap))
+      Win <- length((y2 %>% filter(Winner == team_happy()) %>% filter(year(`Match Date`) == i))$Winner)
+      Loss <- length((y2 %>% filter(Loser == team_happy()) %>% filter(year(`Match Date`) == i))$Loser)
+      if (Loss == 0) {
+        Win_To_Loss <- append(Win_To_Loss, Win)
+      }
+      else {
+        Win_To_Loss <- append(Win_To_Loss, Win/Loss)
+      }
+    }
+    matplot(Year, cbind(Happiness, Win_To_Loss), col = c("red", "blue"), pch = c(13, 16), xlab = "Year", ylab = "Happiness Index + Win To Loss Ratio")
+    legend("topright", legend = c("Happiness Index", "Win To Loss Ratio"), col = c("red", "blue"), pch = c(13, 16))
+  })
+  
+  output$bar_happy <- renderPlot({
+    #    Countries <- unique(table$Loser)[unique(table$Loser) %in% unique(gdp$Country.Name)]
+    #    Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
+    Countries <- teams_happy_general()
+    Correlation <- NULL
+    for (c in Countries) {
+      tab <- happy %>% filter(Country == c)
+      Tf <- team_filter(c)
+      y_team <- unique(year(Tf$'Match Date'))
+      Year <- NULL
+      for (i in unique(tab$Year)) {
+        if (i %in% unique(year(Tf$'Match Date'))) {
+          Year <- append(Year, i)
+        }
+      }
+      Happiness <- NULL
+      Win_To_Loss <- NULL
+      for (i in Year) {
+        hap <- tab$Index[which(tab$Year == i, arr.ind = TRUE)]
+        Happiness <- append(Happiness, as.double(hap))
+        Win <- length((Tf %>% filter(Winner == c) %>% filter(year(`Match Date`) == i))$Winner)
+        Loss <- length((Tf %>% filter(Loser == c) %>% filter(year(`Match Date`) == i))$Loser)
+        if (Loss == 0) {
+          Win_To_Loss <- append(Win_To_Loss, Win)
+        }
+        else {
+          Win_To_Loss <- append(Win_To_Loss, Win/Loss)
+        }
+      }
+      Correlation <- append(Correlation, cor(Win_To_Loss, Happiness))
+    }
+    barplot(names = Countries, height = Correlation, xlab = "Countries", ylab = "Correlation")
+  })
   
   output$gdp_plot <- renderPlot({
     t1 <- team_gdp()
@@ -354,17 +478,16 @@ server <- function(input, output) {
         Win_To_Loss <- append(Win_To_Loss, Win/Loss)
       }
     }
-  # plot(Years, GDP, pch = 16, col = "red")
-   # points(Years, GDP, pch = 12, col = "blue")
-   # lines(Years, GDP, pch = 12, col = "blue")
-   matplot(Years, cbind(GDP, 1000*Win_To_Loss), col = c("red", "blue"), pch = c(13, 16))
-   legend("topright", legend = c("GDP per Capita", "Win To Loss(x 1000)"), col = c("red", "blue"), pch = c(13, 16))
-   print(cor(Win_To_Loss, GDP))
+    # plot(Years, GDP, pch = 16, col = "red")
+    # points(Years, GDP, pch = 12, col = "blue")
+    # lines(Years, GDP, pch = 12, col = "blue")
+    matplot(Years, cbind(GDP, 1000*Win_To_Loss), col = c("red", "blue"), pch = c(13, 16), xlab = "Years", ylab = "GDP + Win To Loss Ratio(x 1000)")
+    legend("topright", legend = c("GDP per Capita", "Win To Loss Ratio(x 1000)"), col = c("red", "blue"), pch = c(13, 16))
   })
   
   output$bar_gdp <- renderPlot({
-#    Countries <- unique(table$Loser)[unique(table$Loser) %in% unique(gdp$Country.Name)]
-#    Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
+    #    Countries <- unique(table$Loser)[unique(table$Loser) %in% unique(gdp$Country.Name)]
+    #    Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
     Countries <- teams_gdp_general()
     Correlation <- NULL
     for (c in Countries) {
@@ -408,6 +531,7 @@ server <- function(input, output) {
     plot(img)
   })
   
+ 
   output$data <- renderTable({
     Player_Data[[input$country]][[input$selectedplayer]][[input$selectb]][[2]]
   })
@@ -442,7 +566,7 @@ server <- function(input, output) {
   
   
   observeEvent(input$start, {
-    if (input$team_select_1 == 'new_team'){
+    if (input$team_select_1 == 'new_team (1)'){
       pyr_1 <- input$player_names
       team_1 <- NULL
       for (pyr in pyr_1){
@@ -453,7 +577,7 @@ server <- function(input, output) {
       team_1 <- Player_Data[[input$team_select_1]]
     }
     
-    if (input$team_select_2 == 'new_team'){
+    if (input$team_select_2 == 'new_team (2)'){
       pyr_2 <- input$player_names_2
       team_2 <- NULL
       for (pyr in pyr_2){
@@ -463,15 +587,103 @@ server <- function(input, output) {
       pyr_2 <- Player_name[[input$team_select_2]]
       team_2 <- Player_Data[[input$team_select_2]]
     }
+    data <- Cricket_Match(team_1,team_2,pyr_1,pyr_2)
     
-    output$team_output <- renderPrint({
-      print(Cricket_Match(team_1,team_2,pyr_1,pyr_2))
+    
+    output$team_1_plot_bat <- renderPlot({
+      ggplot(data[[1]][[1]], aes(x = batsman_name, y = Runs, col = factor(four), size = six , shape = batsman_outer)) + 
+        geom_point() + 
+        labs(title ="Batsman Performance" ,x = "Batsman Name", y = "Total Runs", 
+             shape = "Wicketeer", color = "No of Four", size = "No of Six")
     })
     
+    output$team_2_plot_bat <- renderPlot({
+      ggplot(data[[2]][[1]], aes(x = batsman_name, y = Runs, col = factor(four), size = six , shape = batsman_outer)) + 
+        geom_point() + 
+        labs(title ="Batsman Performance" ,x = "Batsman Name", y = "Total Runs", 
+             shape = "Wicketeer", color = "No of Four", size = "No of Six")
+    })
+    
+    output$team_1_plot_bal <- renderPlot({
+      ggplot(data[[1]][[2]], aes(x = "", y = Runs, fill = Baller_name)) +
+        geom_bar(width = 1, stat = "identity") +
+        geom_text(aes(label = paste(Baller_name, "\n", "Wickets:", Wicket,"\n","Runs:" , Runs)), 
+                  position = position_stack(vjust = 0.5), size = 3, vjust = 1) +
+        coord_polar("y") +
+        theme_void() +
+        theme(legend.position = "none")
+      
+    })
+    
+    output$team_2_plot_bal <- renderPlot({
+      ggplot(data[[2]][[2]], aes(x = "", y = Runs, fill = Baller_name)) +
+        geom_bar(width = 1, stat = "identity") +
+        geom_text(aes(label = paste(Baller_name, "\n", "Wickets:", Wicket,"\n","Runs:" , Runs)), 
+                  position = position_stack(vjust = 0.5), size = 3, vjust = 1) +
+        coord_polar("y") +
+        theme_void() +
+        theme(legend.position = "none")
+      
+    })
+    
+   
+    output$team1 <- renderText({
+      paste("First inning",":")
+    })
+    
+    output$batting <- renderText({
+      paste("Batting :",input$team_select_1)
+    })
+    output$team1_table <- renderDataTable({
+     
+      data[[1]][[1]]
+    })
+   
+    output$bowling <- renderText({
+      paste("Bowling :",input$team_select_2)
+    })
+    output$team1_table_ <- renderDataTable({
+      
+      data[[1]][[2]]
+    })
+    
+    output$team2 <- renderText({
+      paste("Second inning",":")
+    })
+    
+    output$batting_ <- renderText({
+      paste("Batting :",input$team_select_2)
+    })
+    output$team2_table <- renderDataTable({
+      
+      data[[2]][[1]]
+    })
+    
+    output$bowling_ <- renderText({
+      paste("Bowling :",input$team_select_1)
+    })
+    output$team2_table_ <- renderDataTable({
+      
+      data[[2]][[2]]
+    })
+
+    
+    result <- substr(data[[3]],1,6)
+    res <- substr(data[[3]],7,55)
+    if(result == "Team 1"){
+      output$winorloss <- renderText({
+        paste(input$team_select_1,res)
+      })
+    } else {
+      output$winorloss <- renderText({
+        paste(input$team_select_2,res)
+      })
+    }
+    
   })
+ 
   
-  
-  
+ 
 }
 
 shinyApp(ui = ui, server = server)
