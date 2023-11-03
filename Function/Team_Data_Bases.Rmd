@@ -1,0 +1,477 @@
+Libraries
+
+```{r}
+library(tidyverse)
+library(rvest)
+```
+
+
+Teams with their Index Numbers
+
+```{r}
+teams <- c("India", "Pakistan", "Australia", "England", "New-Zealand", "South-Africa", "Sri-Lanka", "Bangladesh", "Afghanistan", "Ireland", "West-Indies", "Zimbabwe")
+number <- c(6, 7, 2, 1, 5, 3, 8, 25, 40, 29, 4, 9)
+```
+
+
+```{r}
+ind <- NULL
+pak <- NULL
+aus <- NULL
+eng <- NULL
+nz <- NULL
+sa <- NULL
+sl <- NULL
+ban <- NULL
+afg <- NULL
+ire <- NULL
+wi <- NULL
+zim <- NULL
+stats <- c(ind, pak, aus, eng, nz, sa, sl, ban, afg, ire, wi, zim)
+```
+
+
+India
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[1], "-", number[1], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  ind <- rbind(ind, tables[[i]])
+}
+ind
+```
+
+Pakistan
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[2], "-", number[2], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  pak <- rbind(ind, tables[[i]])
+}
+pak
+```
+
+Australia
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[3], "-", number[3], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  aus <- rbind(ind, tables[[i]])
+}
+aus
+```
+
+England
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[4], "-", number[4], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  eng <- rbind(eng, tables[[i]])
+}
+eng
+```
+
+New Zealand 
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[5], "-", number[5], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  nz <- rbind(nz, tables[[i]])
+}
+nz
+```
+
+South Africa
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[6], "-", number[6], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  sa <- rbind(sa, tables[[i]])
+}
+sa
+```
+
+Sri Lanka
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[7], "-", number[7], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  sl <- rbind(sl, tables[[i]])
+}
+sl
+```
+
+Bangladesh
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[8], "-", number[8], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  ban <- rbind(ban, tables[[i]])
+}
+ban
+```
+
+Afghanistan
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[9], "-", number[9], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  afg <- rbind(afg, tables[[i]])
+}
+afg
+```
+
+Ireland
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[10], "-", number[10], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  ire <- rbind(ire, tables[[i]])
+}
+ire
+```
+
+West Indies
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[11], "-", number[11], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  wi <- rbind(wi, tables[[i]])
+}
+wi
+```
+
+Zimbabwe
+
+```{r}
+html <- read_html(paste0("https://www.espncricinfo.com/records/team/team-match-results-year/", teams[12], "-", number[12], "/one-day-internationals-2"))
+url <- html_elements(html, "a")
+url <- html_attr(url, "href")
+i <- 23
+index <- 22
+while (index < length(url)) {
+  if (substr(url[index], 1, 9) == "/records/") {
+    i <- index
+  }
+  index <- index + 1
+}
+url <- url[22:i]
+
+tables <- numeric(i - 21)
+for (i in 1:length(tables)) {
+  html <- read_html(paste0("https://www.espncricinfo.com", url[i]))
+  tables[i] <- html_table(html)
+}
+for (i in 1:length(tables)) {
+  values_1 <- tables[[i]]$X1[2 : dim(tables[[i]])[1]]
+  values_2 <- tables[[i]]$X2[2 : dim(tables[[i]])[1]]
+  values_3 <- tables[[i]]$X3[2 : dim(tables[[i]])[1]]
+  values_4 <- tables[[i]]$X4[2 : dim(tables[[i]])[1]]
+  values_5 <- tables[[i]]$X5[2 : dim(tables[[i]])[1]]
+  values_6 <- tables[[i]]$X6[2 : dim(tables[[i]])[1]]
+  values_7 <- tables[[i]]$X7[2 : dim(tables[[i]])[1]]
+  
+  tables[[i]] <- data.frame(Team_1 = values_1, Team_2 = values_2, Winner = values_3, Margin = values_4, Ground = values_5, Match_Date = values_6, Scorecard = values_7)
+  tables[[i]] <- tables[[i]] %>% mutate(Year = substr(Match_Date, nchar(Match_Date) - 3, nchar(Match_Date))) %>% select(- c(Scorecard, Match_Date))
+  zim <- rbind(zim, tables[[i]])
+}
+zim
+```
+
