@@ -15,6 +15,10 @@ load("Cricket_Coord.RData")
 happy <- read.csv("Happiness_Index.csv")
 gdp <- read.csv("gdp_per_capita.csv")
 
+year <- function(da) {
+  return(as.integer(format(da, "%Y")))
+}
+
 ui <- fluidPage(theme = shinytheme("superhero"),
   titlePanel("ODI"),
   tabsetPanel(
