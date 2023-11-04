@@ -19,178 +19,181 @@ year <- function(da) {
 }
 
 ui <- fluidPage(theme = shinytheme("superhero"),
-  titlePanel("ODI"),
-  tabsetPanel(
-    tabPanel("Player ODI Data",
-             sidebarLayout(
-               sidebarPanel(
-                 selectInput("country", "Select Country:",
-                             choices = Country_name,
-                             selected = Country_name[5]),
-                 uiOutput("player"),
-                 uiOutput("ballorbat")
-               ),
-               mainPanel(
-                 plotOutput("img"),
-                 tableOutput("data"),
-                 plotOutput("plot")
-               )
-             )
-    ),
-    tabPanel("Team ODI Data", 
-             tabsetPanel(
-               tabPanel("World View",
-                        sidebarLayout(
-                          sidebarPanel(
-                            sliderInput(
-                              inputId = "y_world",
-                              label = "Years : ",
-                              min = min(year(table$`Match Date`)),
-                              max = max(year(table$`Match Date`)),
-                              value = c(min(year(table$`Match Date`)), max(year(table$`Match Date`)))
-                            )
-                          ),
-                          mainPanel(
-                            plotOutput("world"),
-                            tableOutput("world_table")
-                          )
-                        )
-               ),
-               tabPanel("Team Overview",
-                        sidebarLayout(
-                          sidebarPanel(
-                            selectInput("team", "Select Team : ",
-                                        choices = unique(table$Winner)),
-                            uiOutput("years")
-                          ),
-                          mainPanel(
-                            verbatimTextOutput("team_summary"),
-                            gt_output("h2h")
-                          )
-                        )
-               ),
-               tabPanel("Match Up",
-                        sidebarLayout(
-                          sidebarPanel(
-                            selectInput("team1", "Select Team 1 : ",
-                                        choices = unique(table$Winner),
-                                        selected = "Australia"),
-                            selectInput("team2", "Select Team 2 : ",
-                                        choices = unique(table$Winner),
-                                        selected = "England"),
-                            uiOutput("years_match")
-                          ),
-                          mainPanel(
-                            verbatimTextOutput("match_summary")
-                          )
-                        )
-               ),
-               tabPanel("Happiness Index",
-                        tabsetPanel(
-                          tabPanel("General",
-                                   sidebarLayout(
-                                     sidebarPanel(
-                                       checkboxGroupInput(inputId = "teams_happy_general", label = "Countries",
-                                                          choices = unique(table$Loser)[unique(table$Loser) %in% unique(happy$Country)],
-                                                          selected = c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Ireland", "Afghanistan"))
-                                     ),
-                                     mainPanel(
-                                       plotOutput("bar_happy")
-                                     )
-                                   )
-                          ),
-                          tabPanel("Country",
-                                   sidebarLayout(
-                                     sidebarPanel(
-                                       selectInput("team_happy", "Select Team : ",
-                                                   choices = unique(table$Loser)[unique(table$Loser) %in% unique(happy$Country)],
-                                                   selected = "India")
-                                     ),
-                                     mainPanel(
-                                       plotOutput("happy_plot")
-                                     )
-                                   ))
-                        )
-               ),
-               tabPanel("GDP",
-                        tabsetPanel(
-                          tabPanel("General",
-                                   sidebarLayout(
-                                     sidebarPanel(
-                                       checkboxGroupInput(inputId = "teams_gdp_general", label = "Countries",
-                                                          choices = unique(table$Loser)[unique(table$Loser) %in% unique(gdp$Country.Name)],
-                                                          selected = c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan"))
-                                     ),
-                                     mainPanel(
-                                       plotOutput("bar_gdp")
-                                     )
-                                   )
-                          ),
-                          tabPanel("Country",
-                                   sidebarLayout(
-                                     sidebarPanel(
-                                       selectInput("team_gdp", "Select Team : ",
-                                                   choices = unique(table$Loser)[unique(table$Loser) %in% unique(gdp$Country.Name)],
-                                                   selected = "India")
-                                     ),
-                                     mainPanel(
-                                       plotOutput("gdp_plot")
-                                     )
-                                   ))
-                        )
-               )
-             )
-    ),
-  
-    tabPanel("Cricket Match", 
-             sidebarLayout(
-               sidebarPanel(
-                 span(textOutput("hint")),
-                 selectInput("team_select_1", "Select team 1", 
-                             choices = c(Country_name, "new_team (1)")),
-                 conditionalPanel(
-                   condition = "input.team_select_1 == 'new_team (1)'", 
-                   selectInput("player_names", "Select Players (exect 11 players):", 
-                               choices = All_Player_Name, multiple = TRUE),
-                   span(textOutput("player_counter")),
-                   uiOutput("no_of_player")
-                 ),
-                 selectInput("team_select_2", "Select team 2", 
-                             choices = c(Country_name, "new_team (2)")),
-                 conditionalPanel(
-                   condition = "input.team_select_2 == 'new_team (2)'", 
-                   selectInput("player_names_2", "Select Players (exect 11 players):", 
-                               choices = All_Player_Name, multiple = TRUE),
-                   span(textOutput("player_counter_2")),
-                   uiOutput("no_of_player_2")
-                 ),
-                 actionButton("start", "Start Match")
-               ),
-               mainPanel(
-                 h1(textOutput("winorloss",container = span)),
-                 h2(textOutput("team1",container = span)),
-                 h3(textOutput("batting",container = span)),
-                 dataTableOutput("team1_table"),
-                 plotOutput("team_1_plot_bat"),
-                 h3(textOutput("bowling",container = span)),
-                 dataTableOutput("team1_table_"),
-                 plotOutput("team_1_plot_bal"),
-                 
-                 h2(textOutput("team2",container = span)),
-                 h3(textOutput("batting_",container = span)),
-                 dataTableOutput("team2_table"),
-                 plotOutput("team_2_plot_bat"),
-                 h3(textOutput("bowling_",container = span)),
-                 dataTableOutput("team2_table_"),
-                 plotOutput("team_2_plot_bal"),
-                 
+                titlePanel("ODI"),
+                tabsetPanel(
+                  tabPanel("Player ODI Data",
+                           sidebarLayout(
+                             sidebarPanel(
+                               selectInput("country", "Select Country:",
+                                           choices = Country_name,
+                                           selected = Country_name[5]),
+                               uiOutput("player"),
+                               uiOutput("ballorbat")
+                             ),
+                             mainPanel(
+                               plotOutput("img"),
+                               tableOutput("data"),
+                               plotOutput("plot")
+                             )
+                           )
+                  ),
+                  tabPanel("Team ODI Data", 
+                           tabsetPanel(
+                             tabPanel("World View",
+                                      sidebarLayout(
+                                        sidebarPanel(
+                                          sliderInput(
+                                            inputId = "y_world",
+                                            label = "Years : ",
+                                            min = min(year(table$`Match Date`)),
+                                            max = max(year(table$`Match Date`)),
+                                            value = c(min(year(table$`Match Date`)), max(year(table$`Match Date`))),
+                                            round = TRUE
+                                          )
+                                        ),
+                                        mainPanel(
+                                          plotOutput("world"),
+                                          tableOutput("world_table")
+                                        )
+                                      )
+                             ),
+                             tabPanel("Team Overview",
+                                      sidebarLayout(
+                                        sidebarPanel(
+                                          selectInput("team", "Select Team : ",
+                                                      choices = unique(table$Winner)),
+                                          uiOutput("years")
+                                        ),
+                                        mainPanel(
+                                          verbatimTextOutput("team_summary"),
+                                          plotOutput("plotsummary"),
+                                          gt_output("h2h")
+                                        )
+                                      )
+                             ),
+                             tabPanel("Match Up",
+                                      sidebarLayout(
+                                        sidebarPanel(
+                                          selectInput("team1", "Select Team 1 : ",
+                                                      choices = unique(table$Winner),
+                                                      selected = "Australia"),
+                                          selectInput("team2", "Select Team 2 : ",
+                                                      choices = unique(table$Winner),
+                                                      selected = "England"),
+                                          uiOutput("years_match")
+                                        ),
+                                        mainPanel(
+                                          verbatimTextOutput("match_summary"),
+                                          plotOutput("matchup")
+                                        )
+                                      )
+                             ),
+                             tabPanel("Happiness Index",
+                                      tabsetPanel(
+                                        tabPanel("General",
+                                                 sidebarLayout(
+                                                   sidebarPanel(
+                                                     checkboxGroupInput(inputId = "teams_happy_general", label = "Countries",
+                                                                        choices = unique(table$Loser)[unique(table$Loser) %in% unique(happy$Country)],
+                                                                        selected = c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Ireland", "Afghanistan"))
+                                                   ),
+                                                   mainPanel(
+                                                     plotOutput("bar_happy")
+                                                   )
+                                                 )
+                                        ),
+                                        tabPanel("Country",
+                                                 sidebarLayout(
+                                                   sidebarPanel(
+                                                     selectInput("team_happy", "Select Team : ",
+                                                                 choices = unique(table$Loser)[unique(table$Loser) %in% unique(happy$Country)],
+                                                                 selected = "India")
+                                                   ),
+                                                   mainPanel(
+                                                     plotOutput("happy_plot")
+                                                   )
+                                                 ))
+                                      )
+                             ),
+                             tabPanel("GDP",
+                                      tabsetPanel(
+                                        tabPanel("General",
+                                                 sidebarLayout(
+                                                   sidebarPanel(
+                                                     checkboxGroupInput(inputId = "teams_gdp_general", label = "Countries",
+                                                                        choices = unique(table$Loser)[unique(table$Loser) %in% unique(gdp$Country.Name)],
+                                                                        selected = c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan"))
+                                                   ),
+                                                   mainPanel(
+                                                     plotOutput("bar_gdp")
+                                                   )
+                                                 )
+                                        ),
+                                        tabPanel("Country",
+                                                 sidebarLayout(
+                                                   sidebarPanel(
+                                                     selectInput("team_gdp", "Select Team : ",
+                                                                 choices = unique(table$Loser)[unique(table$Loser) %in% unique(gdp$Country.Name)],
+                                                                 selected = "India")
+                                                   ),
+                                                   mainPanel(
+                                                     plotOutput("gdp_plot")
+                                                   )
+                                                 ))
+                                      )
+                             )
+                           )
+                  ),
                   
-               )
-             )
-              # UI components specific to Cricket Match tab
-             # Add your UI elements here
-    )
-  )
+                  tabPanel("Cricket Match", 
+                           sidebarLayout(
+                             sidebarPanel(
+                               span(textOutput("hint")),
+                               selectInput("team_select_1", "Select team 1", 
+                                           choices = c(Country_name, "new_team (1)")),
+                               conditionalPanel(
+                                 condition = "input.team_select_1 == 'new_team (1)'", 
+                                 selectInput("player_names", "Select Players (exect 11 players):", 
+                                             choices = All_Player_Name, multiple = TRUE),
+                                 span(textOutput("player_counter")),
+                                 uiOutput("no_of_player")
+                               ),
+                               selectInput("team_select_2", "Select team 2", 
+                                           choices = c(Country_name, "new_team (2)")),
+                               conditionalPanel(
+                                 condition = "input.team_select_2 == 'new_team (2)'", 
+                                 selectInput("player_names_2", "Select Players (exect 11 players):", 
+                                             choices = All_Player_Name, multiple = TRUE),
+                                 span(textOutput("player_counter_2")),
+                                 uiOutput("no_of_player_2")
+                               ),
+                               actionButton("start", "Start Match")
+                             ),
+                             mainPanel(
+                               h1(textOutput("winorloss",container = span)),
+                               h2(textOutput("team1",container = span)),
+                               h3(textOutput("batting",container = span)),
+                               dataTableOutput("team1_table"),
+                               plotOutput("team_1_plot_bat"),
+                               h3(textOutput("bowling",container = span)),
+                               dataTableOutput("team1_table_"),
+                               plotOutput("team_1_plot_bal"),
+                               
+                               h2(textOutput("team2",container = span)),
+                               h3(textOutput("batting_",container = span)),
+                               dataTableOutput("team2_table"),
+                               plotOutput("team_2_plot_bat"),
+                               h3(textOutput("bowling_",container = span)),
+                               dataTableOutput("team2_table_"),
+                               plotOutput("team_2_plot_bal"),
+                               
+                               
+                             )
+                           )
+                           # UI components specific to Cricket Match tab
+                           # Add your UI elements here
+                  )
+                )
 )
 
 server <- function(input, output) {
@@ -248,6 +251,7 @@ server <- function(input, output) {
     t[2]
   })
   
+  
   output$world_table <- renderTable({
     teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
     W_L <- NULL
@@ -264,6 +268,7 @@ server <- function(input, output) {
     }
     WL <- data.frame(teams, W_L)
     colnames(WL)[1] <- "Teams"
+    colnames(WL)[2] <- "Win to Loss Ratio"
     WL %>% arrange(desc(W_L)) %>% filter(!is.na(W_L))
   })
   
@@ -292,7 +297,8 @@ server <- function(input, output) {
       label = "Years : ",
       min = min(year(team_table()$`Match Date`)),
       max = max(year(team_table()$`Match Date`)),
-      value = c(min(year(team_table()$`Match Date`)), max(year(team_table()$`Match Date`)))
+      value = c(min(year(team_table()$`Match Date`)), max(year(team_table()$`Match Date`))),
+      round = TRUE
     )
   })
   
@@ -302,7 +308,8 @@ server <- function(input, output) {
       label = "Years : ",
       min = min(year(match_table()$`Match Date`)),
       max = max(year(match_table()$`Match Date`)),
-      value = c(min(year(match_table()$`Match Date`)), max(year(match_table()$`Match Date`)))
+      value = c(min(year(match_table()$`Match Date`)), max(year(match_table()$`Match Date`))),
+      round = TRUE
     )
   })
   
@@ -312,7 +319,8 @@ server <- function(input, output) {
       label = "Years : ",
       min = max(min(year(team_happy_table()$`Match Date`)), min((happy %>% filter(Country == team_happy()))$Year)),
       max = min(max(year(team_happy_table()$`Match Date`)), max((happy %>% filter(Country == team_happy()))$Year)),
-      value = c(max(min(year(team_happy_table()$`Match Date`)), min((happy %>% filter(Country == team_happy()))$Year)), min(max(year(team_happy_table()$`Match Date`)), max((happy %>% filter(Country == team_happy()))$Year))))
+      value = c(max(min(year(team_happy_table()$`Match Date`)), min((happy %>% filter(Country == team_happy()))$Year)), min(max(year(team_happy_table()$`Match Date`)), max((happy %>% filter(Country == team_happy()))$Year))),
+      round = TRUE)
   })
   
   year_team_1 <- reactive({
@@ -347,6 +355,64 @@ server <- function(input, output) {
     colnames(t1)[8] <- "Losing Score"
     t1 <- t1[c(3, 4, 7, 8, 12)]
     summary(t1)
+  })
+  
+  output$plotsummary <- renderPlot({
+    t <- team()
+    tf <- team_filter(t)
+    tab <- tf %>% filter((as.integer(year(tf$'Match Date')) <= year_team_2()) & (as.integer(year(tf$'Match Date')) >= year_team_1()))
+    Date <- NULL
+    Score <- NULL
+    Win <- NULL
+    
+    for (i in 1:length(tab$Winner)) {
+      if (tab$Winner[i] == t) {
+        Date <- append(Date, tab$'Match Date'[i])
+        Score <- append(Score, tab$Winner_Score[i])
+        Win <- append(Win, "Won")
+      }
+      if (tab$Winner[i] != t) {
+        Date <- append(Date, tab$'Match Date'[i])
+        Score <- append(Score, tab$Loser_Score[i])
+        Win <- append(Win, "Lost")
+      }
+    }
+    tb <- data.frame(Date, Score, Win)
+    ggplot(tb, aes(x = Date, y = Score, col = Win)) + geom_point()
+  })
+  
+  output$matchup <- renderPlot({
+    y1 <- year_match_1()
+    y2 <- year_match_2()
+    t1 <- team_1()
+    t2 <- team_2()
+    tf <- team_filter(t1)
+    tab <- tf %>% filter((as.integer(year(tf$'Match Date')) <= y2) & (as.integer(year(tf$'Match Date')) >= y1)) %>% filter(Opponent == t2)
+    Date <- NULL
+    Score <- NULL
+    Team <- NULL
+    
+    for (i in 1:length(tab$Winner)) {
+      if (tab$Winner[i] == t1) {
+        Date <- append(Date, tab$'Match Date'[i])
+        Date <- append(Date, tab$'Match Date'[i])
+        Score <- append(Score, tab$Winner_Score[i])
+        Score <- append(Score, tab$Loser_Score[i])
+        Team <- append(Team, t1)
+        Team <- append(Team, t2)
+      }
+      if (tab$Winner[i] == t2) {
+        Date <- append(Date, tab$'Match Date'[i])
+        Date <- append(Date, tab$'Match Date'[i])
+        Score <- append(Score, tab$Loser_Score[i])
+        Score <- append(Score, tab$Winner_Score[i])
+        Team <- append(Team, t1)
+        Team <- append(Team, t2)
+      }
+    }
+    t <- data.frame(Date, Score, Team)
+    #  t
+    ggplot(t, aes(x = Date, y = Score, col = Team)) + geom_point()
   })
   
   output$h2h <- render_gt({
@@ -531,7 +597,7 @@ server <- function(input, output) {
     plot(img)
   })
   
- 
+  
   output$data <- renderTable({
     Player_Data[[input$country]][[input$selectedplayer]][[input$selectb]][[2]]
   })
@@ -626,7 +692,7 @@ server <- function(input, output) {
       
     })
     
-   
+    
     output$team1 <- renderText({
       paste("First inning",":")
     })
@@ -635,10 +701,10 @@ server <- function(input, output) {
       paste("Batting :",input$team_select_1)
     })
     output$team1_table <- renderDataTable({
-     
+      
       data[[1]][[1]]
     })
-   
+    
     output$bowling <- renderText({
       paste("Bowling :",input$team_select_2)
     })
@@ -666,7 +732,7 @@ server <- function(input, output) {
       
       data[[2]][[2]]
     })
-
+    
     
     result <- substr(data[[3]],1,6)
     res <- substr(data[[3]],7,55)
@@ -681,9 +747,9 @@ server <- function(input, output) {
     }
     
   })
- 
   
- 
+  
+  
 }
 
 shinyApp(ui = ui, server = server)
