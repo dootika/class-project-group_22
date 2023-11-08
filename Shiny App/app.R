@@ -7,6 +7,7 @@ library(shinyalert)
 library(dplyr)
 library(shinythemes)
 library(gt)
+library(plotly)
 
 load("../Data Sets/Cricket.RData")
 load("../Data Sets/Teams_Table.RData")
@@ -176,7 +177,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
                                h2(textOutput("team1",container = span)),
                                h3(textOutput("batting",container = span)),
                                dataTableOutput("team1_table"),
-                               plotOutput("team_1_plot_bat"),
+                               plotlyOutput("team_1_plot_bat"),
                                h3(textOutput("bowling",container = span)),
                                dataTableOutput("team1_table_"),
                                plotOutput("team_1_plot_bal"),
@@ -184,7 +185,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
                                h2(textOutput("team2",container = span)),
                                h3(textOutput("batting_",container = span)),
                                dataTableOutput("team2_table"),
-                               plotOutput("team_2_plot_bat"),
+                               plotlyOutput("team_2_plot_bat"),
                                h3(textOutput("bowling_",container = span)),
                                dataTableOutput("team2_table_"),
                                plotOutput("team_2_plot_bal"),
@@ -636,7 +637,15 @@ server <- function(input, output) {
   observeEvent(input$start, {
     if (input$team_select_1 == 'new_team (1)'){
       pyr_1 <- input$player_names
-      team_1 <- NULL
+      if(length(pyr_1) != 11){
+        showModal(modalDialog(
+          title = "Player Selection Error",
+          "Please select exactly 11 players for Team 1.",
+          easyClose = TRUE
+        ))
+        return(NULL)
+      }
+      team_1 <- list()
       for (pyr in pyr_1){
         team_1[[pyr]] <- All_Player_Data[[pyr]]
       }
@@ -647,7 +656,15 @@ server <- function(input, output) {
     
     if (input$team_select_2 == 'new_team (2)'){
       pyr_2 <- input$player_names_2
-      team_2 <- NULL
+      if(length(pyr_2) != 11){
+        showModal(modalDialog(
+          title = "Player Selection Error",
+          "Please select exactly 11 players for Team 2.",
+          easyClose = TRUE
+        ))
+        return(NULL)
+      }
+      team_2 <- list()
       for (pyr in pyr_2){
         team_2[[pyr]] <- All_Player_Data[[pyr]]
       }
@@ -655,42 +672,78 @@ server <- function(input, output) {
       pyr_2 <- Player_name[[input$team_select_2]]
       team_2 <- Player_Data[[input$team_select_2]]
     }
+    
+    if(input$team_select_2 == input$team_select_1){
+      showModal(modalDialog(
+        title = "Team Selection Error",
+        "Please select different teams",
+        easyClose = TRUE
+      ))
+      return(NULL)
+    }
     data <- Cricket_Match(team_1,team_2,pyr_1,pyr_2)
     
     
-    output$team_1_plot_bat <- renderPlot({
-      ggplot(data[[1]][[1]], aes(x = batsman_name, y = Runs, col = factor(four), size = six , shape = batsman_outer)) + 
+    output$team_1_plot_bat <- renderPlotly({
+      p <-  ggplot(data[[1]][[1]], aes(x = batsman_name, y = Runs, col = factor(four), size = six , shape = batsman_outer)) + 
         geom_point() + 
         labs(title ="Batsman Performance" ,x = "Batsman Name", y = "Total Runs", 
-             shape = "Wicketeer", color = "No of Four", size = "No of Six")
+             shape = "Wicketeer", color = "No of Four", size = "No of Six") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position = "none")
+      ggplotly(p, tooltip = c("batsman_name", "Runs", "four", "six", "batsman_outer"))
     })
     
-    output$team_2_plot_bat <- renderPlot({
-      ggplot(data[[2]][[1]], aes(x = batsman_name, y = Runs, col = factor(four), size = six , shape = batsman_outer)) + 
+    output$team_2_plot_bat <- renderPlotly({
+      p <- ggplot(data[[2]][[1]], aes(x = batsman_name, y = Runs, col = factor(four), size = six , shape = batsman_outer)) + 
         geom_point() + 
         labs(title ="Batsman Performance" ,x = "Batsman Name", y = "Total Runs", 
-             shape = "Wicketeer", color = "No of Four", size = "No of Six")
+             shape = "Wicketeer", color = "No of Four", size = "No of Six") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1),
+              legend.position = "none")  # This line removes the legend
+      
+      ggplotly(p, tooltip = c("batsman_name", "Runs", "four", "six", "batsman_outer"))
     })
+    
     
     output$team_1_plot_bal <- renderPlot({
       ggplot(data[[1]][[2]], aes(x = "", y = Runs, fill = Baller_name)) +
-        geom_bar(width = 1, stat = "identity") +
+        geom_bar(width = 1, stat = "identity", color = "black") +
         geom_text(aes(label = paste(Baller_name, "\n", "Wickets:", Wicket,"\n","Runs:" , Runs)), 
-                  position = position_stack(vjust = 0.5), size = 3, vjust = 1) +
+                  position = position_stack(vjust = 0.5), size = 3, vjust = 1, color = "white") +
         coord_polar("y") +
-        theme_void() +
-        theme(legend.position = "none")
+        theme_minimal() +  # Change the theme to minimal
+        theme(
+          legend.position = "none",
+          axis.text.x = element_blank(),  # Remove x-axis text
+          panel.grid = element_blank(),   # Remove grid lines
+          plot.background = element_rect(fill = "lightblue"), 
+          panel.background = element_rect(fill = "white"),    
+          axis.line = element_line(color = "black"),          
+          plot.title = element_text(hjust = 0.5, size = 16),   
+          axis.title = element_text(size = 1),                
+          axis.text.y = element_text(size = 10)                
+        )
       
     })
     
     output$team_2_plot_bal <- renderPlot({
       ggplot(data[[2]][[2]], aes(x = "", y = Runs, fill = Baller_name)) +
-        geom_bar(width = 1, stat = "identity") +
+        geom_bar(width = 1, stat = "identity", color = "black") +
         geom_text(aes(label = paste(Baller_name, "\n", "Wickets:", Wicket,"\n","Runs:" , Runs)), 
-                  position = position_stack(vjust = 0.5), size = 3, vjust = 1) +
+                  position = position_stack(vjust = 0.5), size = 3, vjust = 1, color = "white") +
         coord_polar("y") +
-        theme_void() +
-        theme(legend.position = "none")
+        theme_minimal() +  # Change the theme to minimal
+        theme(
+          legend.position = "none",
+          axis.text.x = element_blank(),  # Remove x-axis text
+          panel.grid = element_blank(),   # Remove grid lines
+          plot.background = element_rect(fill = "lightblue"),  # Change plot background color
+          panel.background = element_rect(fill = "white"),     # Change panel background color
+          axis.line = element_line(color = "black"),           # Add a border around the plot
+          plot.title = element_text(hjust = 0.5, size = 16),   # Center the title and increase font size
+          axis.title = element_text(size = 1),                # Increase axis label font size
+          axis.text.y = element_text(size = 10)                # Increase y-axis text font size
+        )
       
     })
     
@@ -747,9 +800,7 @@ server <- function(input, output) {
         paste(input$team_select_2,res)
       })
     }
-    
   })
-  
   
   
 }
