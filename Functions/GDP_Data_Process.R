@@ -21,4 +21,4 @@ for (i in 1:length(gdp$Country.Name)) {
   }
 }
 gdp
-save(gdp, file = "../gdp_per_capita.csv")
+save(gdp, file = "../Data Sets/gdp_per_capita.csv")
