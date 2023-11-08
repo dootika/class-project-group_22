@@ -8,14 +8,11 @@ library(dplyr)
 library(shinythemes)
 library(gt)
 
-load("Cricket.RData")
-load("Cricket_Match.RData")
-load("Teams_Table.RData")
-load("Cricket_Coord.RData")
-happy <- read.csv("Happiness_Index.csv")
-gdp <- read.csv("gdp_per_capita.csv")
-
-
+load("../Data Sets/Cricket.RData")
+load("../Data Sets/Teams_Table.RData")
+load("../Data Sets/Cricket_Coord.RData")
+happy <- read.csv("../Data Sets/Happiness_Index.csv")
+gdp <- read.csv("../Data Sets/gdp_per_capita.csv")
 
 
 
