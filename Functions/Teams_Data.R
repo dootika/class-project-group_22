@@ -147,4 +147,4 @@ team_filter <- function(team) {
   return(table1)
 }
 
-save(table, team_filter, file = "Data Sets/Teams_Table.Rdata")
+save(table, team_filter, file = "../Data Sets/Teams_Table.Rdata")
