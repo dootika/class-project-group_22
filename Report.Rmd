@@ -2,7 +2,9 @@
 title: "Project Report"
 author: "Indraj Prajapat"
 date: "2023-11-07"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 # Introduction
@@ -17,7 +19,7 @@ The Shiny app consists of several tabs, each dedicated to a specific aspect of c
 
 This tab allows users to explore individual player statistics for One Day International (ODI) matches. Users can select a country, choose a player, and specify whether they want to view batting or bowling statistics.
 
-![](images/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_29_47.png)
+![](pictures/A__Project 1_cricketshiny - Shiny 07-11-2023 13_29_47.png)
 
 -   **Country Selection**: Users can choose a country from a dropdown menu.
 
@@ -53,16 +55,26 @@ Player_Data$India$`Virat Kohli`$Batting[3]
 This sub-tab provides a global perspective of ODI match outcomes. Users can adjust the year range to view trends over time.
 
 -   **Year Selection Slider**: Users can adjust the range of years they want to analyze.
--   **World Map Plot**: A world map is generated with countries color-coded based on their performance.
+![](pictures/World_Slider.png){width="400"}
+-   **World Map Plot**: Users can visualise the Win to Loss Ratio of each team, color coded, in a time frame.
+
+![](pictures/World_Plot.png){width="800"}
+
+-   **Table**: Users can see Win to Loss Ratio of all teams who have played ODI cricket in the specified timeframe.
+
+![](pictures/World_W_L.png){width="600"}
 
 ### Team Overview
 
 This sub-tab allows users to select a specific team and view a summary of their performance over selected years.
 
--   **Team Selection Dropdown**: Users can choose a team from a dropdown menu.
+-   **Team Selection Dropdown**: Users can choose their ODI team from a dropdown menu.
 -   **Year Range Slider**: Users can specify the range of years they want to analyze.
--   **Team Summary**: A summary of the selected team's performance is presented.
--   **Head-to-Head Table**: A table displaying head-to-head statistics against other teams.
+     ![](pictures/Team_Summary_Input.png){width="400"}
+
+-   **Team Summary**: ![](pictures/Team_Summary.png){width="800"}
+-   **Head-to-Head Table**: Users can see how the selected teams performs against other teams.
+     ![](pictures/H2H.png){width="400"}
 
 ### Match Up
 
@@ -71,29 +83,43 @@ This sub-tab enables users to compare the performance of two selected teams over
 -   **Team 1 Selection Dropdown**: Users can choose the first team from a dropdown menu.
 -   **Team 2 Selection Dropdown**: Users can choose the second team from a dropdown menu.
 -   **Year Range Slider**: Users can specify the range of years they want to analyze.
--   **Match Summary**: A summary of the selected match-up is displayed.
+     ![](pictures/MatchUpInput.png){width="400"}
+-   **Match Summary**: A summary of the matches when the two teams are playing each other.
+     ![](pictures/MatchUpSummary.png){width="800"}
+-   **Match Up Plot**: Users can see a plot of how the teams score when playing one another.
+     ![](pictures/MatchUpPlot.png){width="800"}
 
 ### Happiness Index
 
 This sub-tab provides insights into the correlation between a country's happiness index and its cricket team's performance.
 
--   **General View**: Users can select multiple countries to view the correlation.
--   **Country-Specific View**: Users can choose a specific country to view the correlation.
+-   **General View**: This view is to show the correlation of Happiness Index with the Win to Loss Ratio of the selected countries.
+      ![](pictures/Happiness_General_Input.png){width="400"}
+      ![](pictures/Hap_Cor_Plot.png){width="800"}
+-   **Country-Specific View**: This view can be used to visualise the variation of Happiness Index and Win to Loss Ratio of the selected country with year.
+    ![](pictures/Hap_Team_Input.png){width="400"}
+    ![](pictures/Hap_Team_Plot.png){width="800"}
 
 ### GDP
 
 This sub-tab explores the correlation between a country's Gross Domestic Product (GDP) and its cricket team's performance.
 
--   **General View**: Users can select multiple countries to view the correlation.
--   **Country-Specific View**: Users can choose a specific country to view the correlation.
+-   **General View**: This view is to show the correlation of GDP with the Win to Loss Ratio of the selected countries.
+      ![](pictures/GDP_General_Input.png){width="400"}
+      ![](pictures/GDP_Cor_Plot.png){width="800"}
+
+-   **Country-Specific View**: This view can be used to visualise the variation of GDP and Win to Loss Ratio of the selected country with year.
+    ![](pictures/GDP_Team_Input.png){width="400"}
+
+   ![](pictures/GDP_Team_Plot.png){width="800"}
 
 ## Cricket Match
 
 This tab allows users to simulate a cricket match between two teams. Users can select existing teams or create custom teams by choosing players.
 
-![](pictures/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_33_07.png){width="413"}
+![](pictures/A__Project 1_cricketshiny - Shiny 07-11-2023 13_33_07.png){width="500"}
 
-![](pictures/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_33_15.png){width="415"}
+![](pictures/A__Project 1_cricketshiny - Shiny 07-11-2023 13_33_15.png){width="500"}
 
 -   **Team Selection**: Users can choose existing teams or create new teams by selecting players.
 -   **Player Selection**: Users can select players for the teams.
