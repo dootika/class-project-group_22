@@ -2,7 +2,7 @@
 title: "Project Report"
 author: "Indraj Prajapat"
 date: "2023-11-07"
-output: pdf_document
+output: html_document
 ---
 
 # Introduction
@@ -91,9 +91,9 @@ This sub-tab explores the correlation between a country's Gross Domestic Product
 
 This tab allows users to simulate a cricket match between two teams. Users can select existing teams or create custom teams by choosing players.
 
-![](images/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_33_07.png){width="413"}
+![](pictures/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_33_07.png){width="413"}
 
-![](images/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_33_15.png){width="415"}
+![](pictures/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_33_15.png){width="415"}
 
 -   **Team Selection**: Users can choose existing teams or create new teams by selecting players.
 -   **Player Selection**: Users can select players for the teams.
