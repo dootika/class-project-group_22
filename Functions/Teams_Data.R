@@ -1,9 +1,9 @@
 library(tidyverse)
 library(ggplot2)
+library(rvest)
 
 table <- NULL
-
-for (i in 1971:1975) {
+for (i in 1971:2023) {
   print(i)
   html <- read_html(paste0("https://www.espncricinfo.com/records/year/team-match-results/", i, "-", i, "/one-day-internationals-2"))
   table1 <- html_table(html)[[1]]
@@ -103,35 +103,24 @@ conv_date <- function(date) {
   date <- paste0(y, "/", m, "/", d)
   return(date)
 }
-#table$`Match Date` <- as.Date(conv_date(table$`Match Date`))
+
 for (i in 1:length(table$`Match Date`)) {
   table$`Match Date`[i] <- conv_date(table$`Match Date`[i])
 }
 table$`Match Date` <- as.Date(table$`Match Date`)
 
-Team <- NULL
-for (t in teams()) {
-  tw <- t1 %>% filter(Winner == t)
-  tl <- t1 %>% filter(Loser == t)
-  Win <- NULL
-  Win_Score <- tw$Winner_Score
-  Loss_Score <- tl$Loser_Score
-  Score <- append(Win_Score, Loss_Score)
-  for (i in 1:length(Win_Score)) {
-    Win <- append(Win, "Won")
+Winning_Innings <- NULL
+for (i in 1:length(table$Margin)) {
+  if ((substr(table$Margin[i], nchar(table$Margin[i]) - 6, nchar(table$Margin[i]) - 1) == "wicket") | (substr(table$Margin[i], nchar(table$Margin[i]) - 5, nchar(table$Margin[i])) == "wicket")) {
+    Winning_Innings <- append(Winning_Innings, "Bowling")
   }
-  for (i in 1:length(Loss_Score)) {
-    Win <- append(Win, "Lost")
+  else {
+    Winning_Innings <- append(Winning_Innings, "Batting")
   }
-  Date <- append(tw$`Match Date`, tl$`Match Date`)
-  Name <- NULL
-  for (i in 1:(length(Win_Score) + length(Loss_Score))) {
-    Name <- append(Name, t)
-  }
-  dataset <- data.frame(Name, Score, Win, Date)
-  Team <- rbind(Team, dataset)
 }
-Team <- Team %>% arrange(Date)
+
+colnames(table)[7] <- "Match Date"
+table <- data.frame(table, Winning_Innings)
 
 team_filter <- function(team) {
   table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
@@ -158,4 +147,4 @@ team_filter <- function(team) {
   return(table1)
 }
 
-save(table, team_filter, file = "Teams_Table.Rdata")
+save(table, team_filter, file = "Data Sets/Teams_Table.Rdata")
