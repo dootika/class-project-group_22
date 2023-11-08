@@ -146,5 +146,5 @@ team_filter <- function(team) {
   table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team, Opponent, Team_Score, Opp_Score, Winner, Loser, Winner_Score, Loser_Score, Margin, Ground, 'Match Date')
   return(table1)
 }
-
+colnames(table)[7] <- "Match Date"
 save(table, team_filter, file = "../Data Sets/Teams_Table.Rdata")
