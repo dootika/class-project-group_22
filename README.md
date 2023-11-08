@@ -23,17 +23,15 @@ Country_Coord : represents the coordinate of different countries on map.
 
 GDP_Data_Process : Save GDP data of diffrent countries.
 
-Teams_Data : IS used to scrap different teams' ODI data.
+Teams_Data : Is used to scrap different teams' ODI data.
 
-All team and player : 
+batting scrap function : it is used to scrap batting data.
 
-batting scrap function : 
+cricfunc : it runs simulation for a cricket match.
 
-cricfunc :
+how_list_formed : it is used to a create a list of countries which each contains 15 lists of players in which there are 3 objects.
 
-how_list_formed : 
-
-scrap bowling data function : 
+scrap bowling data function : it is used to scrap bowling data.
 
 Shiny App: Contains the ShinyApp.
 
