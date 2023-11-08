@@ -21,7 +21,7 @@ year <- function(da) {
   return(as.integer(format(da, "%Y")))
 }
 
-ui <- fluidPage(theme = shinytheme("superhero"),
+ui <- fluidPage(theme = shinytheme("slate"),
                 titlePanel("ODI"),
                 tabsetPanel(
                   tabPanel("Player ODI Data",
@@ -35,7 +35,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
                              ),
                              mainPanel(
                                plotOutput("img"),
-                               tableOutput("data"),
+                               dataTableOutput("data"),
                                plotOutput("plot")
                              )
                            )
@@ -601,8 +601,10 @@ server <- function(input, output) {
   })
   
   
-  output$data <- renderTable({
+  output$data <- renderDataTable({
     Player_Data[[input$country]][[input$selectedplayer]][[input$selectb]][[2]]
+  
+   
   })
   
   output$plot <- renderPlot({
