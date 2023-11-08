@@ -64,7 +64,7 @@ for(i in seq_along(Team)) {
 
 country <- list()
 
-for ( i in 5:length(Team)){
+for ( i in 1:length(Team)){
   team_name <- Team[i]
   for( j in 1:15){
     print(Country[[team_name]][j])
