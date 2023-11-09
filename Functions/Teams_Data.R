@@ -123,7 +123,7 @@ colnames(table)[7] <- "Match Date"
 table <- data.frame(table, Winning_Innings)
 
 team_filter <- function(team) {
-  table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
+  table <- table %>% select(Winner, Loser, Margin, Winning_Innings, Winner_Score, Loser_Score, Ground, `Match Date`)
   table1 <- table %>% filter(Winner == team | Loser == team)
   Team_Score <- NULL
   Opp_Score <- NULL
@@ -143,7 +143,7 @@ team_filter <- function(team) {
       Opponent = append(Opponent, table1$Winner[i])
     }
   }
-  table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team, Opponent, Team_Score, Opp_Score, Winner, Loser, Winner_Score, Loser_Score, Margin, Ground, 'Match Date')
+  table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team, Opponent, Winning_Innings, Team_Score, Opp_Score, Winner, Loser, Winner_Score, Loser_Score, Margin, Ground, 'Match Date')
   return(table1)
 }
 colnames(table)[7] <- "Match Date"
