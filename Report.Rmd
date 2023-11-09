@@ -164,11 +164,11 @@ This sub-tab allows users to select a specific team and view a summary of their 
 
 t <- team_filter("Australia")
 t1 <- (t %>% filter((as.integer(year(t$'Match Date')) >= 1971) & (as.integer(year(t$'Match Date')) <= 2023)))
-colnames(t1)[3] <- paste0("Australia Score")
-colnames(t1)[4] <- "Opponent Score"
-colnames(t1)[7] <- "Winning Score"
-colnames(t1)[8] <- "Losing Score"
-t1 <- t1[c(3, 4, 7, 8, 11)]
+colnames(t1)[4] <- paste0("Australia Score")
+colnames(t1)[5] <- "Opponent Score"
+colnames(t1)[8] <- "Winning Score"
+colnames(t1)[9] <- "Losing Score"
+t1 <- t1[c(4, 5, 8, 9, 12)]
 summary(t1)
 ```
 
@@ -224,11 +224,11 @@ This sub-tab enables users to compare the performance of two selected teams over
 
 t <- team_filter("Australia") %>% filter(Opponent == "England")
 t <- t %>% filter((year(`Match Date`) >= 1971) & (year(`Match Date`) <= 2023))
-colnames(t)[3] <- paste0("Australia Score")
-colnames(t)[4] <- paste0("England Score")
-colnames(t)[7] <- "Winning Score"
-colnames(t)[8] <- "Losing Score"
-t <- t[c(3, 4, 7, 8, 11)]
+colnames(t)[4] <- paste0("Australia Score")
+colnames(t)[5] <- paste0("England Score")
+colnames(t)[8] <- "Winning Score"
+colnames(t)[9] <- "Losing Score"
+t <- t[c(4, 5, 8, 9, 12)]
 summary(t)
 ```
      
