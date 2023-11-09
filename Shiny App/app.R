@@ -356,7 +356,7 @@ server <- function(input, output) {
     colnames(t1)[4] <- "Opponent Score"
     colnames(t1)[7] <- "Winning Score"
     colnames(t1)[8] <- "Losing Score"
-    t1 <- t1[c(3, 4, 7, 8, 12)]
+    t1 <- t1[c(3, 4, 7, 8, 11)]
     summary(t1)
   })
   
@@ -458,7 +458,7 @@ server <- function(input, output) {
     colnames(t)[4] <- paste0(team_2(), " Score")
     colnames(t)[7] <- "Winning Score"
     colnames(t)[8] <- "Losing Score"
-    t <- t[c(3, 4, 7, 8, 12)]
+    t <- t[c(3, 4, 7, 8, 11)]
     summary(t)
   })
   
