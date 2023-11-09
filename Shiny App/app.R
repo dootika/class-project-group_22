@@ -16,7 +16,6 @@ happy <- read.csv("../Data Sets/Happiness_Index.csv")
 gdp <- read.csv("../Data Sets/gdp_per_capita.csv")
 
 
-
 year <- function(da) {
   return(as.integer(format(da, "%Y")))
 }
@@ -353,11 +352,11 @@ server <- function(input, output) {
   output$team_summary <- renderPrint({
     t <- team_table()
     t1 <- (t %>% filter((as.integer(year(t$'Match Date')) >= year_team_1()) & (as.integer(year(t$'Match Date')) <= year_team_2())))
-    colnames(t1)[3] <- paste0(team(), " Score")
-    colnames(t1)[4] <- "Opponent Score"
-    colnames(t1)[7] <- "Winning Score"
-    colnames(t1)[8] <- "Losing Score"
-    t1 <- t1[c(3, 4, 7, 8, 11)]
+    colnames(t1)[4] <- paste0(team(), " Score")
+    colnames(t1)[5] <- "Opponent Score"
+    colnames(t1)[8] <- "Winning Score"
+    colnames(t1)[9] <- "Losing Score"
+    t1 <- t1[c(4, 5, 8, 9, 12)]
     summary(t1)
   })
   
@@ -475,11 +474,11 @@ server <- function(input, output) {
   output$match_summary <- renderPrint({
     t <- match_table()
     t <- t %>% filter((year(`Match Date`) >= year_match_1()) & (year(`Match Date`) <= year_match_2()))
-    colnames(t)[3] <- paste0(team_1(), " Score")
-    colnames(t)[4] <- paste0(team_2(), " Score")
-    colnames(t)[7] <- "Winning Score"
-    colnames(t)[8] <- "Losing Score"
-    t <- t[c(3, 4, 7, 8, 11)]
+    colnames(t)[4] <- paste0(team_1(), " Score")
+    colnames(t)[5] <- paste0(team_2(), " Score")
+    colnames(t)[8] <- "Winning Score"
+    colnames(t)[9] <- "Losing Score"
+    t <- t[c(4, 5, 8, 9, 12)]
     summary(t)
   })
   
