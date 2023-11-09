@@ -87,7 +87,8 @@ ui <- fluidPage(theme = shinytheme("slate"),
                                         ),
                                         mainPanel(
                                           verbatimTextOutput("match_summary"),
-                                          plotOutput("matchup")
+                                          plotOutput("matchup"),
+                                          tableOutput("matchuptab")
                                         )
                                       )
                              ),
@@ -418,6 +419,26 @@ server <- function(input, output) {
     ggplot(t, aes(x = Date, y = Score, col = Team)) + geom_point()
   })
   
+  output$matchuptab <- renderTable({
+    y1 <- year_match_1()
+    y2 <- year_match_2()
+    t1 <- team_1()
+    t2 <- team_2()
+    tf <- team_filter(t1)
+    tab <- tf %>% filter((as.integer(year(tf$'Match Date')) <= y2) & (as.integer(year(tf$'Match Date')) >= y1)) %>% filter(Opponent == t2)
+    Team_1_Batting <- length((tab %>% filter(Winner == t1) %>% filter(Winning_Innings == "Batting"))$Winner)
+    Team_1_Bowling <- length((tab %>% filter(Winner == t1) %>% filter(Winning_Innings == "Bowling"))$Winner)
+    Team_2_Batting <- length((tab %>% filter(Winner == t2) %>% filter(Winning_Innings == "Batting"))$Winner)
+    Team_2_Bowling <- length((tab %>% filter(Winner == t2) %>% filter(Winning_Innings == "Bowling"))$Winner)
+    Innings <- c("Batting", "Bowling")
+    Team_1 <- c(Team_1_Batting, Team_1_Bowling)
+    Team_2 <- c(Team_2_Batting, Team_2_Bowling)
+    tb <- data.frame(Innings, Team_1, Team_2)
+    colnames(tb)[2] <- paste0(t1)
+    colnames(tb)[3] <- paste0(t2)
+    tb
+  })
+  
   output$h2h <- render_gt({
     t2 <- team_table()
     t <- t2 %>% filter((as.integer(year(t2$'Match Date')) >= year_team_1()) & (as.integer(year(t2$'Match Date')) <= year_team_2()))
@@ -603,8 +624,8 @@ server <- function(input, output) {
   
   output$data <- renderDataTable({
     Player_Data[[input$country]][[input$selectedplayer]][[input$selectb]][[2]]
-  
-   
+    
+    
   })
   
   output$plot <- renderPlot({
