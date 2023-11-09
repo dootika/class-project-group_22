@@ -269,6 +269,26 @@ t <- data.frame(Date, Score, Team)
 ggplot(t, aes(x = Date, y = Score, col = Team)) + geom_point()
 ```
      
+-   **Match Up Table**: Users can see who won how many matches in their previous encounters, and in which innings.
+```{r}
+y1 <- 1971
+y2 <- 2023
+t1 <- "Australia"
+t2 <- "England"
+tf <- team_filter(t1)
+tab <- tf %>% filter((as.integer(year(tf$'Match Date')) <= y2) & (as.integer(year(tf$'Match Date')) >= y1)) %>% filter(Opponent == t2)
+Team_1_Batting <- length((tab %>% filter(Winner == t1) %>% filter(Winning_Innings == "Batting"))$Winner)
+Team_1_Bowling <- length((tab %>% filter(Winner == t1) %>% filter(Winning_Innings == "Bowling"))$Winner)
+Team_2_Batting <- length((tab %>% filter(Winner == t2) %>% filter(Winning_Innings == "Batting"))$Winner)
+Team_2_Bowling <- length((tab %>% filter(Winner == t2) %>% filter(Winning_Innings == "Bowling"))$Winner)
+Innings <- c("Batting", "Bowling")
+Team_1 <- c(Team_1_Batting, Team_1_Bowling)
+Team_2 <- c(Team_2_Batting, Team_2_Bowling)
+tb <- data.frame(Innings, Team_1, Team_2)
+colnames(tb)[2] <- paste0(t1)
+colnames(tb)[3] <- paste0(t2)
+tb
+```
 
 ### Happiness Index
 
