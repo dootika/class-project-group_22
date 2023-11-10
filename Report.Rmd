@@ -501,25 +501,25 @@ The R code for the Shiny app demonstrates proficiency in utilizing the Shiny pac
 
 -   What is the correlation between a country's performance and its GDP and its Happiness index?
 
--   Can i get a visual representations of data using graphs and chart?
+-   Can we get a visual representation of data using graphs and charts?
 
--   Can I view a team's recent performance statistics, such as recent form and trends?
+-   Can we view a team's recent performance statistics, such as recent form and trends?
 
--   How can I access a summary of each previous encounter between two sides in the app?
+-   How can we access a summary of each previous encounter between two sides in the app?
 
--   Can I filter match history by specific teams, years, or tournaments?
+-   Can we filter match history by specific teams, years, or tournaments?
 
 -   Is there a feature to watch or re-enact classic matches from the past?
 
--   Can I find the win-loss ratio for different countries participating in the ODI World Cup?
+-   Can we find the win-loss ratio for different countries participating in the ODI World Cup?
 
 -   Are historical statistics and records available for past World Cup tournaments?
 
--   Can I choose between default teams or create a custom team with my favorite players?
+-   Can we choose between default teams or create a custom team with my favorite players?
 
 -   What level of control and customization is available during the match simulation?
 
 
 # Conclusion
 
-Access to individual player information throughout their career is a fantastic feature, especially for cricket fans who want to dig deep into player statistics and achievements. This can improve the overall cricketing experience. The ability to run live simulations with default teams or custom lineups is an appealing feature. It allows users to test strategies, create dream teams, and experience the excitement of live matches within the app. Displaying win-loss ratios for different countries in the ODI World Cup adds a competitive element to the app. Users can compare their customized team's performance to that of real-world national teams. Being capable to access summaries of previous encounters between two sides provides historical context. It allows users to research rivalries and historical events in cricket. Viewing a team's past performance, along with graphs, is a useful feature for those interested in in-depth analysis. It enables users to make data-driven decisions and understand team trends. It's interesting to see the correlation between GDP per capita, Happiness Index, and win-loss ratios of World Cup countries. It gives the app an educational and analytical dimension, appealing to users who are interested in the broader societal impact on sports performance.
+Access to individual player information throughout their career is a fantastic feature, especially for cricket fans who want to dig deep into player statistics and achievements. This can improve the overall cricketing experience. The ability to run live simulations with default teams or custom lineups is an appealing feature. It allows users to test strategies, create dream teams, and experience the excitement of live matches within the app. Displaying win-loss ratios for different countries in the ODI World Cup adds a competitive element to the app. Users can compare their customized team's performance to that of real-world national teams. Being capable of accessing summaries of previous encounters between two sides provides historical context. It allows users to research rivalries and historical events in cricket. Viewing a team's past performance, along with graphs, is a useful feature for those interested in in-depth analysis. It enables users to make data-driven decisions and understand team trends. It's interesting to see the correlation between World Cup countries' GDP per capita, the Happiness Index, and win-loss ratios. It gives the app an educational and analytical dimension, appealing to users who are interested in the broader societal impact on sports performance.
