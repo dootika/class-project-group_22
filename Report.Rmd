@@ -616,9 +616,9 @@ W_L <- NULL
 t1 <- 1980
 t2 <- 2021
 t <- table %>% filter((year(`Match Date`) >= t1) & (year(`Match Date`) <= t2))
-for (i in 1:length(Teams)) {
-  win <- sum(t$Winner == Teams[i])
-  loss <- sum(t$Loser == Teams[i])
+for (i in 1:length(teams)) {
+  win <- sum(t$Winner == teams[i])
+  loss <- sum(t$Loser == teams[i])
   if (loss == 0) {
     W_L <- append(W_L, NA)
   }
