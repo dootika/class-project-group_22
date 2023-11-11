@@ -24,6 +24,8 @@ library(gt)
 library(plotly)
 library(rvest)
 
+
+
 load("Data Sets/Cricket.RData")
 load("Data Sets/Teams_Table.RData")
 load("Data Sets/Cricket_Coord.RData")
@@ -35,33 +37,462 @@ year <- function(da) {
 }
 ```
 
-
 # Introduction
 
 This report provides a detailed analysis of the Shiny app developed for cricket player ODI data . The app is designed to allow users to interact with cricket data in a user-friendly manner, providing insights into player performance, team statistics, match simulations, and more.
 
-## App Overview
-
-The Shiny app consists of Three tabs, each dedicated to a specific aspect of cricket analysis. This section provides an overview of each tab's purpose and functionality.
 
 ## Data
 
-Data for the first tab of shiny is in form of list , there are mainly two lists which are named as Player_data and Player_name . In Player_data list data which is scraped is saved in well defined format with respect to player with there country . In Player_name list all player named are saved with respect to there country . The interesting thing in data saving is that the list named are of country name and of player name and in a list there is another list i.e in Player_data list there is a list for country names and in that there is a list named after players. And the same data is used to simulate the Cricket Match .
-Data for the second tab is saved in the form of an Rdata called Teams_Table.Rdata, which saves data in the form of a table called table, and a function called team_filter which collects data of all matches which are played by a certain team. That file saves the data of all matches, including the winners, losers, their scores, margins and more. Happiness_Index.csv saves the data of Happiness Index of countries from 2013 to 2023. gdp_per_capita.csv saves data of GDP per Capita of countries.
+Data for the first tab of shiny is in form of list , there are mainly two lists which are named as Player_data and Player_name . In Player_data list data which is scraped is saved in well defined format with respect to player with there country . In Player_name list all player named are saved with respect to there country . The interesting thing in data saving is that the list named are of country name and of player name and in a list there is another list i.e in Player_data list there is a list for country names and in that there is a list named after players. And the same data is used to simulate the Cricket Match . Data for the second tab is saved in the form of an Rdata called Teams_Table.Rdata, which saves data in the form of a table called table, and a function called team_filter which collects data of all matches which are played by a certain team. That file saves the data of all matches, including the winners, losers, their scores, margins and more. Happiness_Index.csv saves the data of Happiness Index of countries from 2013 to 2023. gdp_per_capita.csv saves data of GDP per Capita of countries.
+
+
+
 
 ### Scraping of data
 
-Data for first tab that is a list witch contain batting and bowling data is scraped form a website named as Cricmatric you can go there from [here](http://www.cricmetric.com/index.py). First we formed a function and that give list to the function that is player name list then we got the data in output. Function for batting data can be seen by clicking [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/batting%20scrap%20function.R) and for balling data click [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/scrap%20bowling%20data%20function.R) and for how we combine data in a list to see click [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/how_list_formed.R).
+Data for first tab that is a list witch contain batting and bowling data is scraped form a website named as Cricmatric you can go there from [here](http://www.cricmetric.com/index.py). First we formed a function and that give list to the function that is player name list then we got the data in output. Function for batting data can be seen by clicking [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/batting%20scrap%20function.R) and for bowling data click [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/scrap%20bowling%20data%20function.R) and for how we combine data in a list to see click [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/how_list_formed.R).
 
 Data stored in Teams_Table.Rdata is scraped from [Cricinfo](http://www.cricmetric.com/index.py) and can be seen by clicking [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/Teams_Data.R). We save the table containing the ODI Matches data, along with a function team_filter, which filters out data of matches played by selected team.
 
+first of all we scraped different team's ODI data using the following code -
+
+```{r}
+#| echo: true
+#| eval: false
+#| warning: false
+library(tidyverse)
+library(ggplot2)
+
+table <- NULL
+
+for (i in 1971:1975) {
+  print(i)
+  html <- read_html(paste0("https://www.espncricinfo.com/records/year/team-match-results/", i, "-", i, "/one-day-internationals-2"))
+  table1 <- html_table(html)[[1]]
+  table1 <- table1 %>% filter(X1 != "Team 1")
+  link <- html_elements(html, "a")
+  link <- html_attr(link, "href")
+  link <- unique(link)
+  link <- link[substr(link, 1, 8) == "/series/"]
+  table1 <- cbind(table1, paste0("https://www.espncricinfo.com", link))
+  table1 <- cbind(table1, numeric(dim(table1)[1]))
+  table1 <- cbind(table1, numeric(dim(table1)[1]))
+  table <- rbind(table, table1)
+}
+
+colnames(table) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
+
+table <- table %>% filter(Winner != "no result") %>% filter(Winner != "tied")
+links <- table$Link
 
 
-## Player ODI Data
+for (i in 1:dim(table)[1]) {
+  print(i)
+  html <- read_html(links[i])
+  tables <- html_table(html)
+  table_1 <- tables[[1]]
+  table_2 <- tables[[3]]
+  name <- html_elements(html, "span")
+  name <- html_text(name)
+  name <- unique(name)
+  c1 <- table_1$R[dim(table_1)[1] - 2]
+  c2 <- table_2$R[dim(table_2)[1] - 2]
+  if (!is.na(as.integer(substr(table_1$R[dim(table_1)[1] - 1], 1, 1)))) {
+    c1 <- table_1$R[dim(table_1)[1] - 1]
+  }
+  if (!is.na(as.integer(substr(table_2$R[dim(table_2)[1] - 1], 1, 1)))) {
+    c2 <- table_2$R[dim(table_2)[1] - 1]
+  }
+  total_1 <- NULL
+  total_2 <- NULL
+  if (substr(c1, nchar(c1) - 1, nchar(c1) - 1) == "/") {
+    total_1 <- as.integer(substr(c1, 1, which(strsplit(c1, "")[[1]] == "/") - 1))
+  }
+  else {
+    total_1 <- as.integer(c1)
+  }
+  if (substr(c2, nchar(c2) - 1, nchar(c2) - 1) == "/") {
+    total_2 <- as.integer(substr(c2, 1, which(strsplit(c2, "")[[1]] == "/") - 1))
+  }
+  else {
+    total_2 <- as.integer(c2)
+  }
+  
+  winner <- table$Winner[i]
+  loser <- NULL
+  if (table$`Team 1`[i] == winner) {
+    loser <- table$`Team 2`[i]
+  }
+  else {
+    loser <- table$`Team 1`[i]
+  }
+  ind1 <- which(name == paste0(winner, " Innings"))
+  ind2 <- which(name == paste0(loser, " Innings"))
+  if (ind1 < ind2) {
+    table$Winner_Score[i] <- total_1
+    table$Loser_Score[i] <- total_2
+  }
+  else {
+    table$Loser_Score[i] <- total_1
+    table$Winner_Score[i] <- total_2
+  }
+}
+t1 <- table
+Loser <- numeric(length(t1$`Team 1`))
+for (i in 1:length(Loser)) {
+  if (t1$Winner[i] == t1$`Team 1`[i]) {
+    Loser[i] = t1$`Team 2`[i]
+  }
+  if (t1$Winner[i] == t1$`Team 2`[i]) {
+    Loser[i] = t1$`Team 1`[i]
+  }
+}
+table <- cbind(t1, Loser)
+table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
+mon <- month.abb
+
+conv_date <- function(date) {
+  dd <- strsplit(date, " ")[[1]]
+  y <- dd[3]
+  m <- which(mon == dd[1], arr.ind = TRUE)
+  d <- dd[2]
+  if (!(gregexpr(pattern ='-',d)[[1]][1])) {
+    d <- substr(d, 1, nchar(d) - 1)
+  }
+  if (gregexpr(pattern ='-',d)[[1]][1]) {
+    d <- substr(d, gregexpr(pattern ='-',d)[[1]][1] + 1, nchar(d) - 1)
+  }
+  date <- paste0(y, "/", m, "/", d)
+  return(date)
+}
+#table$`Match Date` <- as.Date(conv_date(table$`Match Date`))
+for (i in 1:length(table$`Match Date`)) {
+  table$`Match Date`[i] <- conv_date(table$`Match Date`[i])
+}
+table$`Match Date` <- as.Date(table$`Match Date`)
+
+Team <- NULL
+for (t in teams()) {
+  tw <- t1 %>% filter(Winner == t)
+  tl <- t1 %>% filter(Loser == t)
+  Win <- NULL
+  Win_Score <- tw$Winner_Score
+  Loss_Score <- tl$Loser_Score
+  Score <- append(Win_Score, Loss_Score)
+  for (i in 1:length(Win_Score)) {
+    Win <- append(Win, "Won")
+  }
+  for (i in 1:length(Loss_Score)) {
+    Win <- append(Win, "Lost")
+  }
+  Date <- append(tw$`Match Date`, tl$`Match Date`)
+  Name <- NULL
+  for (i in 1:(length(Win_Score) + length(Loss_Score))) {
+    Name <- append(Name, t)
+  }
+  dataset <- data.frame(Name, Score, Win, Date)
+  Team <- rbind(Team, dataset)
+}
+Team <- Team %>% arrange(Date)
+
+team_filter <- function(team) {
+  table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
+  table1 <- table %>% filter(Winner == team | Loser == team)
+  Team_Score <- NULL
+  Opp_Score <- NULL
+  Opponent <- NULL
+  Team <- NULL
+  for (i in 1:length(table1$Loser)) {
+    if (table1$Winner[i] == team) {
+      Team_Score = append(Team_Score, table1$Winner_Score[i])
+      Opp_Score = append(Opp_Score, table1$Loser_Score[i])
+      Team <- append(Team, team)
+      Opponent = append(Opponent, table1$Loser[i])
+    }
+    if (table1$Loser[i] == team) {
+      Team_Score = append(Team_Score, table1$Loser_Score[i])
+      Opp_Score = append(Opp_Score, table1$Winner_Score[i])
+      Team <- append(Team, team)
+      Opponent = append(Opponent, table1$Winner[i])
+    }
+  }
+  table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team, Opponent, Team_Score, Opp_Score, Winner, Loser, Winner_Score, Loser_Score, Margin, Ground, 'Match Date')
+  return(table1)
+}
+
+save(table, team_filter, file = "Teams_Table.Rdata")
+```
+
+After that we scraped player's individual bowling and batting data using the following code chunks -
+
+For Bowling Data -
+
+```{r}
+#| echo: true
+#| eval: false
+#| warning: false
+Scrap_Bowling_data <- function(name){
+  name1 <- gsub(pattern = " ", replacement = "+", name )   # removing spaces and adding + sign between them to make links 
+  link <- paste0("http://www.cricmetric.com/playerstats.py?player=",name1,"&role=bowler&format=ODI&groupby=year")
+  # name <- read_html(link) %>% html_element(".panel-heading") %>% html_text2()
+  data <- read_html(link) %>%            # scraping data from the websites 
+    html_table()
+  Data <- data[[1]]
+  row_number <- dim(Data)[1]       # taking the no of rowns of the data set 
+  Data$Runs <-  gsub(pattern = ",",replacement = "",x = Data$Runs)      # removing commas so that the the value can be changed itno numberic 
+  Data$Overs <- gsub(pattern = ",",replacement = "",x = Data$Overs)
+  Data$'4s' <- gsub(pattern = ",",replacement = "",x = Data$'4s')
+  
+  Data$Innings <- as.numeric(Data$Innings)         # making vakues in numeric formet
+  Data$Runs <- as.numeric(Data$Runs)
+  Data$Overs <- as.numeric(Data$Overs)
+  Data$Wickets <- as.numeric(Data$Wickets)
+  Data$Avg <- as.numeric(Data$Avg)
+  Data$SR <- as.numeric(Data$SR)
+  Data$'4s' <- as.numeric(Data$'4s')
+  Data$'6s' <- as.numeric(Data$'6s')
+  Data1 <- Data         # making copy of the data 
+  Data <- Data[-c(row_number),]      # rremoving last row of the data that is of totoal of the columns values 
+  Main <- Data %>%        # now summarising the data to make it in useful way and easy to read
+    select(Year ,Runs ,Overs, Innings , Wickets) %>%
+    summarise(Year = Year ,
+              Runs_per_Inning = round({Runs/Innings},3),
+              Wickets_per_Inning_X10 =Wickets/Innings *10 , 
+    )
+  xy <- Main[,c(1,2,3)]  # making another subset of the data to make plot 
+  xy <- melt(xy,"Year")
+  
+  ggp <- ggplot(xy , aes(x = Year , y = value , fill = variable )) +          # ploting the data 
+    geom_bar(stat = "identity", width = 0.5,position = position_dodge(width = 0.7)) + 
+    labs(x = "Years" , y = "Number of Wickets Or Runs Per Year ", title =paste0(name,"'s Performance") )
+  
+ 
+  xz  <- Data1[c(row_number),]
+  some <- as.numeric(xz[1,5]/xz[1,3])      # taking output that are probablities plot and data set that we have cleaned 
+  output <- list(length(3))
+  output[[1]] <- some/6
+  output[[2]] <- Data
+  output[[3]] <- ggp
+  return(output)
+}
+```
+
+For Batting Data -
+
+```{r}
+#| echo: true
+#| eval: false
+#| warning: false
+Scrap_Bating_data <- function(name){
+ # function will take input a name that will be a name of a cricket player 
+  name1 <- gsub(pattern = " ", replacement = "+", name )         # here i will replace spaces with + so i can form a link 
+  link <- paste0("http://www.cricmetric.com/playerstats.py?player=",name1,"&role=batsman&format=ODI&groupby=year")   # here i formed a link 
+
+  data <- read_html(link) %>%            # here i scraped a batting data from the website Cricmetirc
+    html_table()
+  Data <- data[[1]]   # i will select first tibble that is of batting data that i targeted
+  row_number <-dim(Data)[1]
+  Data$Runs <-  gsub(pattern = ",",replacement = "",x = Data$Runs)   # removing commas from the digits
+  Data$Balls <- gsub(pattern = ",",replacement = "",x = Data$Balls)
+  Data$'4s' <- gsub(pattern = ",",replacement = "",x = Data$'4s')
+  
+  
+  
+  Data$Innings <- as.numeric(Data$Innings)       # taking all the charahtere value as a numeric value so that r can recoganise it 
+  Data$Runs <- as.numeric(Data$Runs)
+  Data$Balls <- as.numeric(Data$Balls)
+  Data$Outs <- as.numeric(Data$Outs)
+  Data$Avg <- as.numeric(Data$Avg)
+  Data$SR <- as.numeric(Data$SR)
+  Data$HS <- as.numeric(Data$HS)
+  Data$'50' <- as.numeric(Data$'50')
+  Data$'100' <- as.numeric(Data$'100')
+  Data$'4s' <- as.numeric(Data$'4s')
+  Data$'6s' <- as.numeric(Data$'6s')
+  Data1 <- Data                 # making a copy of the data that is cleaned 
+  Data <- Data[-c(row_number),]  # removing the last row that is of sum of values
+  
+  Main <- Data %>%            # now summarising data in useful way 
+    select(Year ,Runs ,Balls, Innings , Outs) %>%
+    summarise(Year = Year ,
+              Rate = round({Runs/Balls}*6, 2),
+              Runs_per_Inning =Runs/Innings  , 
+              Balls_per_Inning = Balls/Innings,
+              Not_Out_Rate = {Innings-Outs}/Innings)
+  
+  xy <- Main[,c(1,3,4)]        # making a subset of the data 
+  xy <- melt(xy,"Year")             # now i will melt the data so it will be easy to plot in a effective way 
+  text <- Main$Rate                 # now the below 4_5 lines are of ploting 
+  text <- append(text,Main$Not_Out_Rate)
+  text <- round(text,3)
+  Data5 <- tibble(xy,text)
+  ggp <- ggplot(Data5 , aes(x = Year , y = value , fill = variable )) +                    # here i defined the ggplot 
+    geom_bar(stat = "identity", width = 0.5,position = position_dodge(width = 0.7)) + 
+    geom_text(aes(label=text), vjust=1.5, colour="black", size=3) +
+    labs(x = "Years" , y = "Number of Balls Or Runs ", title =paste0(name,"'s Performance") )
+  
+  
+  xz  <- Data1[c(row_number),]    # now use the last row of the data set to make some usful  things that will help us to get some idea about the runs rates and probablities of the player to hit runs 
+  Fours <- as.numeric(xz[1,11]/xz[1,4])
+  Sixs <- as.numeric(xz[1,12]/xz[1,4])
+  
+  Fo <- as.numeric(xz[1,11])*4
+  Six <- as.numeric(xz[1,12])*6
+  Tot <- as.numeric(xz[1,3])
+  ToB <- as.numeric(xz[1,4])
+  pro <- {Tot-(Fo+Six)}/6
+  
+  Ones <- pro*3/ToB
+  Twos <-  pro*2/ToB
+  Threes <-  pro/ToB
+  zeros <- 1-Ones - Twos - Threes - Fours - Sixs
+  x <- NULL
+  x[1] <- zeros                 # here i am saving the probablities and plot and cleaned data 
+  x[2] <- Ones
+  x[3] <- Twos
+  x[4] <- Threes
+  x[5] <- Fours
+  x[6] <-Sixs
+  output <- list(length(3))
+  output[[1]] <- x
+  output[[2]] <- Data
+  output[[3]] <- ggp
+  return(output)
+  
+}
+```
+
+Now using these two function data is scraped below is the code:
+
+
+```{r}
+#| echo: true
+#| eval: false
+#| warning: false
+# for geting team names form the website this is done 
+Team <- read_html("https://www.thecricketer.com/Topics/mens-world-cup-2023/mens_cricket_world_cup_2023_squads_all_teams_player_lists.html") %>%
+  html_elements("#wl_f813f7 h3") %>%
+  html_text2()
+
+# below we scrape player name 
+
+Team_Player <- read_html("https://www.thecricketer.com/Topics/mens-world-cup-2023/mens_cricket_world_cup_2023_squads_all_teams_player_lists.html") %>%
+  html_elements("#wl_f813f7 p") %>%
+  html_text2()
+
+# now we facing problem from here , player names are not correct come extra things are coming for cleaning the names we do the following things
+Team_Player <- Team_Player[-c(1:3,14)]
+
+Team_Player <- gsub("[(c)]","",Team_Player)
+# we print all the player name and mannually correct them 
+
+Team_Player[1] <- "Hashmatullah Shahidi , Rahmanullah Gurbaz, Ibrahim Zadran, Riaz Hassan, Rahmat Shah, Najibullah Zadran, Mohammad Nabi, Ikram Alikhil, Azmatullah Omarzai, Rashid Khan, Mujeeb ur Rahman, Noor Ahmad, Fazalhaq Farooqi, Abdul Rahman, Naveen-ul-Haq"
+Team_Player[2] <- "Pat Cummins, Sean Abbott, Alex Carey, Cameron Green, Josh Hazlewood, Travis Head, Josh Inglis, Marnus Labuschagne, Mitchell Marsh, Glenn Maxwell, Steven Smith, Mitchell Starc, Marcus Stoinis, David Warner, Adam Zampa"
+Team_Player[3] <- "Shakib Al Hasan , Liton Das , Najmul Hossain Shanto, Tanzid Hasan, Towhid Hridoy, Mahmudullah, Mushfiqur Rahim, Mehidy Hasan, Mahedi Hasan, Tanzim Hasan Sakib, Nasum Ahmed, Shoriful Islam, Hasan Mahmud, Taskin Ahmed, Mustafizur Rahman"
+Team_Player[4] <- "Jos Buttler , Moeen Ali, Gus Atkinson, Jonny Bairstow, Sam Curran, Liam Livingstone, Dawid Malan, Adil Rashid, Joe Root, Jason Roy, Ben Stokes, Reece Topley, David Willey, Mark Wood, Chris Woakes"
+Team_Player[6] <- "SA Edwards , Max O'Dowd, Bas de Leede, Vikram Singh, Teja Nidamanuru, Paul van Meekeren, Colin Ackermann, Roelof van der Merwe, Logan van Beek, Aryan Dutt, Ryan Klein, Wesley Barresi, Saqib Zulfiqar, Shariz Ahmad, Michael Rippon"
+
+# from here we create a country name list with respect to the player 
+Afghanistan <- strsplit(x =Team_Player[1] , split = ",",fixed = TRUE )
+Afghanistan[[1]][15] <- "Naveen-ul-Haq"
+Australia <- strsplit(x =Team_Player[2] , split = ",",fixed = TRUE )
+Bangladesh <- strsplit(x =Team_Player[3] , split = ",",fixed = TRUE )
+England <- strsplit(x =Team_Player[4] , split = ",",fixed = TRUE )
+India <- strsplit(x =Team_Player[5] , split = ",",fixed = TRUE )
+Netherlands <- strsplit(x =Team_Player[6] , split = ",",fixed = TRUE )
+New_Zealand <- strsplit(x =Team_Player[7] , split = ",",fixed = TRUE )[[1]][-c(8)]
+Pakistan <- strsplit(x =Team_Player[8] , split = ",",fixed = TRUE )
+Pakistan[[1]][14] <- "Shaheen Shah Afridi"
+Pakistan[[1]][15] <- "Usama Mir"
+South_Africa <- strsplit(x =Team_Player[9] , split = ",",fixed = TRUE )
+Sri_Lanka <- strsplit(x =Team_Player[10] , split = ",",fixed = TRUE )
+Sri_Lanka[[1]][5]
+
+
+
+
+
+
+
+
+
+#################################################################################
+
+# Create an empty list to store the team players
+Country <- vector("list", length = length(Team))
+
+# Loop through each team
+for(i in seq_along(Team)) {
+  team_name <- Team[i]
+  players <- strsplit(Team_Player[i], ", ")[[1]]
+  
+  # Assign the players to the list element with the team name as the list name
+  Country[[team_name]] <- players
+}
+
+
+
+###############################################################################
+# from here we get the list of player and now we scrap the data in a such way that we can store then together for further use 
+country <- list()
+
+for ( i in 5:length(Team)){
+  team_name <- Team[i]
+  for( j in 1:15){
+    print(Country[[team_name]][j])
+    country[[team_name]][[Country[[team_name]][j]]][["Batting"]] <- Scrap_Bating_data(Country[[team_name]][j])
+    
+  }
+}
+```
+
+
+
+the GDP per Capital data for diffrent contries is stored using the .csv with this little piece of code -
+
+```{r}
+#| echo: true
+#| eval: false
+#| warning: false
+gdp <- read.csv("../gdp_per_capita.csv")
+gdp
+typeof(gdp$X1960)
+for (i in 3:63) {
+  colnames(gdp)[i] <- 1957 + i
+}
+i <- 1965
+as.double((gdp %>% filter(Country.Name == "India"))[4] + (gdp %>% filter(Country.Name == "India"))[5])
+for (i in 1:length(gdp$Country.Name)) {
+  if (gdp$Country.Name[i] == "United Kingdom") {
+    gdp$Country.Name[i] = "England"
+  }
+  if (gdp$Country.Name[i] == "United Arab Emirates") {
+    gdp$Country.Name[i] = "U.A.E."
+  }
+  if (gdp$Code[i] == "HKG") {
+    gdp$Country.Name[i] = "Hong Kong"
+  }
+  if (gdp$Country.Name[i] == "United States") {
+    gdp$Country.Name[i] = "U.S.A."
+  }
+}
+gdp
+save(gdp, file = "../gdp_per_capita.csv")
+```
+
+
+
+## App Overview
+
+The Shiny app consists of Three tabs, each dedicated to a specific aspect of cricket analysis.Now one by one deep explanation is below :
+
+
+### Player ODI Data
 
 This tab allows users to explore individual player statistics for One Day International (ODI) matches. Users can select a country, choose a player, and specify whether they want to view batting or bowling statistics.
 
-![](pictures/A__Project 1_cricketshiny - Shiny 07-11-2023 13_29_47.png)
+![](pictures/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_29_47.png)
 
 -   **Country Selection**: Users can choose a country from a dropdown menu.
 
@@ -88,15 +519,14 @@ Player_Data$India$`Virat Kohli`$Batting[2]
 Player_Data$India$`Virat Kohli`$Batting[3]
 ```
 
-## Team ODI Data
+### Team ODI Data
 
-### World View
+#### World View
 
 This sub-tab provides a global perspective of ODI match outcomes. Users can adjust the year range to view trends over time.
 
 -   **Year Selection Slider**: Users can adjust the range of years they want to analyze.
--   **World Map Plot**: Users can visualise the Win to Loss Ratio of each team, color coded, in a time frame.
-![](pictures/World_Slider.png){width=400}
+-   **World Map Plot**: Users can visualise the Win to Loss Ratio of each team, color coded, in a time frame. ![](pictures/World_Slider.png){width="400"}
 
 ```{r}
 #| echo: false
@@ -119,7 +549,6 @@ WL <- data.frame(teams, W_L)
 data <- left_join(coord, WL, by = "teams")
 ggplot(data, aes(x = long, y = lat, group = group)) + geom_polygon(aes(fill = W_L), color = "black")
 ```
-
 
 -   **Table**: Users can see Win to Loss Ratio of all teams who have played ODI cricket in the specified timeframe.
 
@@ -147,17 +576,72 @@ x <- as_tibble(WL %>% arrange(desc(W_L)) %>% filter(!is.na(W_L)))
 x
 ```
 
+To represent different countries that take part in the ODI world cup each, we used the following code to mark their coordinates and display them in the world map -
 
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+library(ggplot2)
+west_indies <- c("Saint Lucia", "Anguilla", "Dominican Republic", "Guadeloupe", "Antigua", "Barbados", "Jamaica", "Trinidad", "Cayman Islands", "Bahamas", "Haiti", "Cuba", "Virgin Islands", "Martinique", "Saint Kitts", "Bermuda", "	
+Saint Barthelemy")
+r <- map_data("world")
+colnames(r)[5] <- "teams"
+for (i in 1:length(r$teams)) {
+  if (r$teams[i] %in% west_indies) {
+    r$teams[i] <- "West Indies"
+  }
+  if (r$teams[i] == "UK") {
+    r$teams[i] <- "England"
+  }
+  if (r$teams[i] == "United Arab Emirates") {
+    r$teams[i] <- "U.A.E"
+  }
+  if (r$teams[i] == "USA") {
+    r$teams[i] <- "U.S.A."
+  }
+  if (r$teams[i] == "Papua New Guinea") {
+    r$teams[i] <- "P.N.G."
+  }
+}
+coord <- r
+save(coord, file = "Cricket_Coord.RData")
+#data <- left_join(r, team_data, by = "teams")
+#save(data, file = "World_Coord.Rdata")
+#data <- data %>% filter(!is.na(win_loss))
+#data
+#ggplot(data, aes(x = long, y = lat, group = group)) + geom_polygon(aes(fill = win_loss), color = "black")
+teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
+W_L <- NULL
+t1 <- 1980
+t2 <- 2021
+t <- table %>% filter((year(`Match Date`) >= t1) & (year(`Match Date`) <= t2))
+for (i in 1:length(Teams)) {
+  win <- sum(t$Winner == Teams[i])
+  loss <- sum(t$Loser == Teams[i])
+  if (loss == 0) {
+    W_L <- append(W_L, NA)
+  }
+  else {
+    W_L <- append(W_L, win/loss)
+  }
+}
+WL <- data.frame(teams, W_L)
+WL
+data <- left_join(coord, WL, by = "teams")
+ggplot(data, aes(x = long, y = lat, group = group)) + geom_polygon(aes(fill = W_L), color = "black")
+```
 
-### Team Overview
+#### Team Overview
 
 This sub-tab allows users to select a specific team and view a summary of their performance over selected years.
 
 -   **Team Selection Dropdown**: Users can choose their ODI team from a dropdown menu.
--   **Year Range Slider**: Users can specify the range of years they want to analyze.
-     ![](pictures/Team_Summary_Input.png){width="400"}
 
--   **Team Summary**: 
+-   **Year Range Slider**: Users can specify the range of years they want to analyze. ![](pictures/Team_Summary_Input.png){width="400"}
+
+-   **Team Summary**:
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -173,6 +657,7 @@ summary(t1)
 ```
 
 -   **Head-to-Head Table**: Users can see how the selected teams performs against other teams.
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -208,9 +693,8 @@ tab <- tab_spanner(d, label = "Batting", columns = ends_with("Bat"))
 tab <- tab_spanner(tab, label = "Chasing", columns = ends_with("Bowl"))
 tab |> cols_label(starts_with("Won") ~ "Won", starts_with("Lost") ~ "Lost")
 ```
-     
 
-### Match Up
+#### Match Up
 
 This sub-tab enables users to compare the performance of two selected teams over a specified year range.
 
@@ -218,6 +702,7 @@ This sub-tab enables users to compare the performance of two selected teams over
 -   **Team 2 Selection Dropdown**: Users can choose the second team from a dropdown menu.
 -   **Year Range Slider**: Users can specify the range of years they want to analyze.
 -   **Match Summary**: A summary of the matches when the two teams are playing each other.
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -231,8 +716,9 @@ colnames(t)[9] <- "Losing Score"
 t <- t[c(4, 5, 8, 9, 12)]
 summary(t)
 ```
-     
+
 -   **Match Up Plot**: Users can see a plot of how the teams score when playing one another.
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -268,8 +754,9 @@ for (i in 1:length(tab$Winner)) {
 t <- data.frame(Date, Score, Team)
 ggplot(t, aes(x = Date, y = Score, col = Team)) + geom_point()
 ```
-     
+
 -   **Match Up Table**: Users can see who won how many matches in their previous encounters, and in which innings.
+
 ```{r}
 y1 <- 1971
 y2 <- 2023
@@ -290,12 +777,12 @@ colnames(tb)[3] <- paste0(t2)
 tb
 ```
 
-### Happiness Index
+#### Happiness Index
 
 This sub-tab provides insights into the correlation between a country's happiness index and its cricket team's performance.
 
--   **General View**: This view is to show the correlation of Happiness Index with the Win to Loss Ratio of the selected countries.
-      ![](pictures/Happiness_General_Input.png){width="400"}
+-   **General View**: This view is to show the correlation of Happiness Index with the Win to Loss Ratio of the selected countries. ![](pictures/Happiness_General_Input.png){width="400"}
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -329,81 +816,81 @@ for (c in Countries) {
 }
 barplot(names = Countries, height = Correlation, xlab = "Countries", ylab = "Correlation")
 ```
-      
+
 -   **Country-Specific View**: This view can be used to visualise the variation of Happiness Index and Win to Loss Ratio of the selected country with year.
 
     ![](pictures/Hap_Team_Input.png){width="400"}
-```{r}
-#| echo: false
-#| eval: true
 
-y1 <- happy %>% filter(Country == "India")
-y2 <- team_filter("India")
-Year <- NULL
-for (i in unique(y1$Year)) {
-  if (i %in% unique(year(y2$'Match Date'))) {
-    Year <- append(Year, i)
-  }
-}
-Win_To_Loss <- NULL
-Happiness <- NULL
-for (i in Year) {
-  hap <- y1$Index[which(y1$Year == i, arr.ind = TRUE)]
-  Happiness <- append(Happiness, as.double(hap))
-  Win <- length((y2 %>% filter(Winner == "India") %>% filter(year(`Match Date`) == i))$Winner)
-  Loss <- length((y2 %>% filter(Loser == "India") %>% filter(year(`Match Date`) == i))$Loser)
-  if (Loss == 0) {
-    Win_To_Loss <- append(Win_To_Loss, Win)
-  }
-  else {
-    Win_To_Loss <- append(Win_To_Loss, Win/Loss)
-  }
-}
-matplot(Year, cbind(Happiness, Win_To_Loss), col = c("red", "blue"), pch = c(13, 16), xlab = "Year", ylab = "Happiness Index + Win To Loss Ratio")
-legend("topright", legend = c("Happiness Index", "Win To Loss Ratio"), col = c("red", "blue"), pch = c(13, 16))
-```
-    
+    ```{r}
+    #| echo: false
+    #| eval: true
 
-### GDP
+    y1 <- happy %>% filter(Country == "India")
+    y2 <- team_filter("India")
+    Year <- NULL
+    for (i in unique(y1$Year)) {
+      if (i %in% unique(year(y2$'Match Date'))) {
+        Year <- append(Year, i)
+      }
+    }
+    Win_To_Loss <- NULL
+    Happiness <- NULL
+    for (i in Year) {
+      hap <- y1$Index[which(y1$Year == i, arr.ind = TRUE)]
+      Happiness <- append(Happiness, as.double(hap))
+      Win <- length((y2 %>% filter(Winner == "India") %>% filter(year(`Match Date`) == i))$Winner)
+      Loss <- length((y2 %>% filter(Loser == "India") %>% filter(year(`Match Date`) == i))$Loser)
+      if (Loss == 0) {
+        Win_To_Loss <- append(Win_To_Loss, Win)
+      }
+      else {
+        Win_To_Loss <- append(Win_To_Loss, Win/Loss)
+      }
+    }
+    matplot(Year, cbind(Happiness, Win_To_Loss), col = c("red", "blue"), pch = c(13, 16), xlab = "Year", ylab = "Happiness Index + Win To Loss Ratio")
+    legend("topright", legend = c("Happiness Index", "Win To Loss Ratio"), col = c("red", "blue"), pch = c(13, 16))
+    ```
+
+#### GDP
 
 This sub-tab explores the correlation between a country's Gross Domestic Product (GDP) and its cricket team's performance.
 
 -   **General View**: This view is to show the correlation of GDP with the Win to Loss Ratio of the selected countries.
 
-      ![](pictures/GDP_General_Input.png){width="400"}
-```{r}
-#| echo: false
-#| eval: true
-Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
-Correlation <- NULL
-for (c in Countries) {
-  tab <- gdp %>% filter(Country.Name == c)
-  Tf <- team_filter(c)
-  y_team <- unique(year(Tf$'Match Date'))
-  Years <- NULL
-  for (i in 1960:2020) {
-    if (!is.na(tab[i - 1957] == "NA") & (as.integer(i) %in% y_team)) {
-      Years <- append(Years, as.integer(i))
+    ![](pictures/GDP_General_Input.png){width="400"}
+
+    ```{r}
+    #| echo: false
+    #| eval: true
+    Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
+    Correlation <- NULL
+    for (c in Countries) {
+      tab <- gdp %>% filter(Country.Name == c)
+      Tf <- team_filter(c)
+      y_team <- unique(year(Tf$'Match Date'))
+      Years <- NULL
+      for (i in 1960:2020) {
+        if (!is.na(tab[i - 1957] == "NA") & (as.integer(i) %in% y_team)) {
+          Years <- append(Years, as.integer(i))
+        }
+      }
+      GDP <- NULL
+      Win_To_Loss <- NULL
+      for (i in Years) {
+        GDP <- append(GDP, as.integer(tab[i - 1957]))
+        Win <- length((Tf %>% filter(Winner == c) %>% filter(year(`Match Date`) == i))$Winner)
+        Loss <- length((Tf %>% filter(Loser == c) %>% filter(year(`Match Date`) == i))$Loser)
+        if (Loss == 0) {
+          Win_To_Loss <- append(Win_To_Loss, Win)
+        }
+        else {
+          Win_To_Loss <- append(Win_To_Loss, Win/Loss)
+        }
+      }
+      Correlation <- append(Correlation, cor(Win_To_Loss, GDP))
     }
-  }
-  GDP <- NULL
-  Win_To_Loss <- NULL
-  for (i in Years) {
-    GDP <- append(GDP, as.integer(tab[i - 1957]))
-    Win <- length((Tf %>% filter(Winner == c) %>% filter(year(`Match Date`) == i))$Winner)
-    Loss <- length((Tf %>% filter(Loser == c) %>% filter(year(`Match Date`) == i))$Loser)
-    if (Loss == 0) {
-      Win_To_Loss <- append(Win_To_Loss, Win)
-    }
-    else {
-      Win_To_Loss <- append(Win_To_Loss, Win/Loss)
-    }
-  }
-  Correlation <- append(Correlation, cor(Win_To_Loss, GDP))
-}
-barplot(names = Countries, height = Correlation, xlab = "Countries", ylab = "Correlation")
-```
-      
+    barplot(names = Countries, height = Correlation, xlab = "Countries", ylab = "Correlation")
+    ```
 
 -   **Country-Specific View**: This view can be used to visualise the variation of GDP and Win to Loss Ratio of the selected country with year.
 
@@ -439,15 +926,14 @@ for (i in Years) {
 matplot(Years, cbind(GDP, 1000*Win_To_Loss), col = c("red", "blue"), pch = c(13, 16), xlab = "Years", ylab = "GDP + Win To Loss Ratio(x 1000)")
 legend("topright", legend = c("GDP per Capita", "Win To Loss Ratio(x 1000)"), col = c("red", "blue"), pch = c(13, 16))
 ```
-   
 
 ## Cricket Match
 
 This tab allows users to simulate a cricket match between two teams. Users can select existing teams or create custom teams by choosing players.
 
-![](pictures/A__Project 1_cricketshiny - Shiny 07-11-2023 13_33_07.png){width="500"}
+![](pictures/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_33_07.png){width="500"}
 
-![](pictures/A__Project 1_cricketshiny - Shiny 07-11-2023 13_33_15.png){width="500"}
+![](pictures/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_33_15.png){width="500"}
 
 -   **Team Selection**: Users can choose existing teams or create new teams by selecting players.
 -   **Player Selection**: Users can select players for the teams.
@@ -493,7 +979,381 @@ data
           axis.text.y = element_text(size = 10)    )            # Increase y-axis text font size
 ```
 
-# Code Evaluation
+we used the following code block to run the simulation for cricket match between two teams -
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+library(dplyr)
+
+
+Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
+# here will make a function that will semulates a cricket match 
+  
+{  
+  ball <- NULL          # defing ball as null to get values in it 
+  
+  for(i in 1:11){          # for i in 1:11 means there are 11 players in a team but will select 5 best bowlers 
+    tryCatch({
+      ball[i] <- Team_Data_2[[i]]$Bowling[[1]]
+    }, error=function(e){})
+  }
+  ball[is.na(ball)] <- 0
+  
+  bowler_seq <- NULL
+  for ( i in 1:5){
+    bowler_seq[i] <- which(ball == max(ball), arr.ind = TRUE)[1]
+    ball[bowler_seq[i]] <- 0
+  }
+  
+  
+  
+  
+  Baller_name <- NULL           # defining some variable that we will use in the function 
+  Ball_runs <- NULL
+  B_wicket <- NULL
+  
+  Order <- rep(bowler_seq,10)      # this sequence is make to define the order of bowling 
+   
+  
+  batsman_name <- NULL
+  Batsman_6 <- NULL
+  Batsman_4 <- NULL
+  batsman_run <- NULL
+  batsman_outer <- NULL
+  
+  
+  
+  Runs <- 0
+  Ind <- 1
+  
+  for(i in 1:50){             # i is the no of ovwers here that will be 50 and it will take one by one all the values 
+    
+    if(Ind == 11){
+      break                 # this is for when 10 player got out and 11 player came to bets that the match will be over and so we beak the loop at 11
+    }
+    over <- NULL           # this will bw used to take data of oveers in it 
+    
+    
+    Or <- Order[i]
+    
+    Wicket <- 0
+    
+    
+    for(j in 1:6){       # here j is the no of ball in  a over 
+      if(Ind == 11){         # this is also same when 11 player come to bet the loop will break and function will stop so that match will stop 
+        break
+      }
+      batsman_run[6*(i-1) + j] <- 0        # i defined the values zero so that is this veriable in function not take any value then NA will not come zero will come if it takes value that it will be replaced
+      Batsman_6[6*(i-1) + j] <- 0
+      Batsman_4[6*(i-1) + j] <- 0
+      Sam <- sample(c("Out","Not_Out"),1,replace = TRUE,prob = c(Team_Data_2[[Or]]$Bowling[[1]],1-Team_Data_2[[Or]]$Bowling[[1]]))    # here i take a sample of out or not on based of probablities that we calculated by data that was scraped 
+     
+      
+       if(Sam == "Not_Out"){              # what if player will not out obeviously it will hit some runs or zero can be there
+  #      print(Team_Data_1[[Ind]]$Batting[[1]])
+        Run <- sample(c(0,1,2,3,4,6),1,replace = TRUE,prob = Team_Data_1[[Ind]]$Batting[[1]])    # this is the sample witch is based of players probablity to hit runs  according to previoud data 
+          
+        
+         Runs <- Runs + Run
+        over[j] <- Run                      ##### here i will store the values in variables
+        batsman_name[6*(i-1) + j] <- Team_name_1[Ind]
+        batsman_run[6*(i-1) + j] <- Run
+        if(Run == 1 || Run == 3){            # we know when there are 1 or 3 run strike changes that i done here 
+          
+          
+          nam <- Team_name_1[Ind]
+          nam_ <- Team_name_1[Ind + 1]
+          Team_name_1[Ind + 1] <- nam
+          Team_name_1[Ind] <- nam_
+          
+          
+          
+          Runner <- Team_Data_1[[Ind]]$Batting              
+          Facer <-Team_Data_1[[Ind +1]]$Batting
+          Team_Data_1[[Ind+1]]$Batting <- Runner
+          Team_Data_1[[Ind]]$Batting <- Facer
+          
+        }
+        
+        
+        if (Run == 4){                    # if 4 runs i will store it in a variable 
+          Batsman_4[6*(i-1)+j] <- 1
+        }
+        
+        
+        if (Run == 6){                       # this is for 6
+          Batsman_6[6*(i-1)+j] <- 1
+        } 
+        
+        
+        
+      } 
+      
+      else {
+        
+        batsman_name[6*(i-1) + j] <- Team_name_1[Ind]     # what if player got out           # here i store wicket and bowlers name
+        batsman_outer[6*(i-1)+j] <- Team_name_2[Or]
+        Ind <- Ind + 1
+        Wicket <- Wicket + 1
+        over[j] <- 0
+      }
+      if (j == 6 ){          # this is the last ball of the over strike will change so  i do it here 
+        
+        nam <- Team_name_1[Ind]
+        nam_ <- Team_name_1[Ind + 1]
+        Team_name_1[Ind + 1] <- nam
+        Team_name_1[Ind] <- nam_
+        
+        
+        B_wicket[i] <- Wicket
+        Baller_name[i] <- Team_name_2[Or]
+        Ball_runs[i] <- sum(over)
+        
+        Runner <- Team_Data_1[[Ind]]$Batting
+        Facer <-Team_Data_1[[Ind +1]]$Batting
+        Team_Data_1[[Ind+1]]$Batting <- Runner
+        Team_Data_1[[Ind]]$Batting <- Facer
+        
+        # Over_Data[[i]] <- Over
+      }
+        
+        
+     }
+      
+      
+      
+      
+    }
+    
+    baller_data <- tibble(Baller_name, Ball_runs,B_wicket )           # here i make tibble of all the data that a got from above loops 
+    baller_data <- baller_data %>%                                    # here i arrange then in a useful way 
+      group_by(Baller_name) %>%
+      summarise(Runs = sum(Ball_runs),
+                Wicket = sum(B_wicket)) %>%
+      arrange(desc(Wicket))
+  
+  
+    batsman_data <- tibble( batsman_name, Batsman_6 ,Batsman_4,batsman_run )
+    batsman_data <- batsman_data %>%                                             # this is of batsman data 
+      group_by(batsman_name) %>%
+      summarise(six = sum(Batsman_6),
+                four = sum(Batsman_4),
+                Runs = sum(batsman_run))
+  
+    batsman_outer <- as.vector(na.omit(batsman_outer))
+    len <- dim(batsman_data)[1]                                # some na are introduced so i remove them 
+    
+    if( length(batsman_outer) != len){
+      for ( i in {length(batsman_outer) + 1}:len){
+        batsman_outer[i] <- "Not Out"
+      }
+    }
+    batsman_data$batsman_outer <- batsman_outer
+    
+    
+    
+    team_1_run <- sum(batsman_data$Runs)                  # savinf all useful thing in a list so i can take them in a return 
+    team_2_wicket <- sum(baller_data$Wicket)
+    
+    output_1 <- list(length(2))
+    output_1[[1]] <- batsman_data
+    output_1[[2]] <- baller_data
+  }
+  #####################
+  # Team 2 Bats                                    # here the same process for inning 2 so i will not explain it 
+  ####################
+  
+  {  
+    ball <- NULL
+    for(i in 1:11){
+      tryCatch({
+        ball[i] <- Team_Data_1[[i]]$Bowling[[1]]
+      }, error=function(e){})
+    }
+    ball[is.na(ball)] <- 0
+    
+    bowler_seq <- NULL
+    for ( i in 1:5){
+      bowler_seq[i] <- which(ball == max(ball), arr.ind = TRUE)[1]
+      ball[bowler_seq[i]] <- 0
+    }
+    
+    
+    
+    
+    Baller_name <- NULL
+    Ball_runs <- NULL
+    B_wicket <- NULL
+    
+    Order <- rep(bowler_seq,10)
+    
+    
+    batsman_name <- NULL
+    Batsman_6 <- NULL
+    Batsman_4 <- NULL
+    batsman_run <- NULL
+    batsman_outer <- NULL
+    
+    
+    
+    Runs <- 0
+    Ind <- 1
+    
+    for(i in 1:50){
+      
+      if(Ind == 11){
+        break
+      }
+      over <- NULL
+      
+      
+      Or <- Order[i]
+      
+      Wicket <- 0
+      
+      
+      for(j in 1:6){
+        if(Ind == 11){
+          break
+        }
+        batsman_run[6*(i-1) + j] <- 0 
+        Batsman_6[6*(i-1) + j] <- 0
+        Batsman_4[6*(i-1) + j] <- 0
+        Sam <- sample(c("Out","Not_Out"),1,replace = TRUE,prob = c(Team_Data_1[[Or]]$Bowling[[1]],1-Team_Data_1[[Or]]$Bowling[[1]]))
+        if(Sam == "Not_Out"){
+          #      print(Team_Data_2[[Ind]]$Batting[[1]])
+          Run <- sample(c(0,1,2,3,4,6),1,replace = TRUE,prob = Team_Data_2[[Ind]]$Batting[[1]])
+          
+          
+          Runs <- Runs + Run
+          over[j] <- Run
+          batsman_name[6*(i-1) + j] <- Team_name_2[Ind]
+          batsman_run[6*(i-1) + j] <- Run
+          if(Run == 1 || Run == 3){
+            
+            
+            nam <- Team_name_2[Ind]
+            nam_ <- Team_name_2[Ind + 1]
+            Team_name_2[Ind + 1] <- nam
+            Team_name_2[Ind] <- nam_
+            
+            
+            
+            Runner <- Team_Data_2[[Ind]]$Batting
+            Facer <-Team_Data_2[[Ind +1]]$Batting
+            Team_Data_2[[Ind+1]]$Batting <- Runner
+            Team_Data_2[[Ind]]$Batting <- Facer
+            
+          }
+          
+          
+          if (Run == 4){
+            Batsman_4[6*(i-1)+j] <- 1
+          }
+          
+          
+          if (Run == 6){
+            Batsman_6[6*(i-1)+j] <- 1
+          } 
+          
+          
+          
+        } 
+        
+        else {
+          
+          batsman_name[6*(i-1) + j] <- Team_name_2[Ind]
+          batsman_outer[6*(i-1)+j] <- Team_name_1[Or]
+          Ind <- Ind + 1
+          Wicket <- Wicket + 1
+          over[j] <- 0
+        }
+        if (j == 6 ){
+          
+          nam <- Team_name_2[Ind]
+          nam_ <- Team_name_2[Ind + 1]
+          Team_name_2[Ind + 1] <- nam
+          Team_name_2[Ind] <- nam_
+          
+          
+          B_wicket[i] <- Wicket
+          Baller_name[i] <- Team_name_1[Or]
+          Ball_runs[i] <- sum(over)
+          
+          Runner <- Team_Data_2[[Ind]]$Batting
+          Facer <-Team_Data_2[[Ind +1]]$Batting
+          Team_Data_2[[Ind+1]]$Batting <- Runner
+          Team_Data_2[[Ind]]$Batting <- Facer
+          
+          
+        }
+        
+        
+      }
+      
+      
+      
+      
+    }
+    
+    baller_data <- tibble(Baller_name, Ball_runs,B_wicket )
+    baller_data <- baller_data %>%
+      group_by(Baller_name) %>%
+      summarise(Runs = sum(Ball_runs),
+                Wicket = sum(B_wicket)) %>%
+      arrange(desc(Wicket))
+    
+    
+    batsman_data <- tibble( batsman_name, Batsman_6 ,Batsman_4,batsman_run )
+    batsman_data <- batsman_data %>%
+      group_by(batsman_name) %>%
+      summarise(six = sum(Batsman_6),
+                four = sum(Batsman_4),
+                Runs = sum(batsman_run))
+    
+    batsman_outer <- as.vector(na.omit(batsman_outer))
+    len <- dim(batsman_data)[1]
+    
+    if( length(batsman_outer) != len){
+      for ( i in {length(batsman_outer) + 1}:len){
+        batsman_outer[i] <- "Not Out"
+      }
+    }
+    batsman_data$batsman_outer <- batsman_outer
+    
+    
+    team_2_run <- sum(batsman_data$Runs)
+    team_1_wicket <- sum(baller_data$Wicket)
+    
+    output_2 <- list(length(2))
+    output_2[[1]] <- batsman_data
+    output_2[[2]] <- baller_data
+  }
+  
+  output <- list(length(2))
+  output[[1]] <- output_1
+  output[[2]] <-output_2
+  
+  
+  if (team_1_run == team_2_run){
+    output[[3]] <- "Match Tie"
+  }
+  
+  
+  if ( team_1_run > team_2_run){
+    by <- team_1_run - team_2_run
+    output[[3]] <- paste( "Team 1 win by :" , by ,"runs")
+  } else {
+    by <- 11 - team_1_wicket
+    output[[3]] <- paste( "Team 2 win by :" , by ,"wickets")
+  }
+    return(output)
+}
+```
+
+## Code Evaluation
 
 The R code for the Shiny app demonstrates proficiency in utilizing the Shiny package, data manipulation, and visualization techniques. The app's functionality is well-organized, allowing for seamless interaction with the cricket data. You can find codes here.[Click here](https://github.com/dootika/class-project-group_22)
 
@@ -501,25 +1361,24 @@ The R code for the Shiny app demonstrates proficiency in utilizing the Shiny pac
 
 -   What is the correlation between a country's performance and its GDP and its Happiness index?
 
--   Can we get a visual representation of data using graphs and charts?
+-   Can i get a visual representations of data using graphs and chart?
 
--   Can we view a team's recent performance statistics, such as recent form and trends?
+-   Can I view a team's recent performance statistics, such as recent form and trends?
 
--   How can we access a summary of each previous encounter between two sides in the app?
+-   How can I access a summary of each previous encounter between two sides in the app?
 
--   Can we filter match history by specific teams, years, or tournaments?
+-   Can I filter match history by specific teams, years, or tournaments?
 
 -   Is there a feature to watch or re-enact classic matches from the past?
 
--   Can we find the win-loss ratio for different countries participating in the ODI World Cup?
+-   Can I find the win-loss ratio for different countries participating in the ODI World Cup?
 
 -   Are historical statistics and records available for past World Cup tournaments?
 
--   Can we choose between default teams or create a custom team with my favorite players?
+-   Can I choose between default teams or create a custom team with my favorite players?
 
 -   What level of control and customization is available during the match simulation?
 
+## Conclusion
 
-# Conclusion
-
-Access to individual player information throughout their career is a fantastic feature, especially for cricket fans who want to dig deep into player statistics and achievements. This can improve the overall cricketing experience. The ability to run live simulations with default teams or custom lineups is an appealing feature. It allows users to test strategies, create dream teams, and experience the excitement of live matches within the app. Displaying win-loss ratios for different countries in the ODI World Cup adds a competitive element to the app. Users can compare their customized team's performance to that of real-world national teams. Being capable of accessing summaries of previous encounters between two sides provides historical context. It allows users to research rivalries and historical events in cricket. Viewing a team's past performance, along with graphs, is a useful feature for those interested in in-depth analysis. It enables users to make data-driven decisions and understand team trends. It's interesting to see the correlation between World Cup countries' GDP per capita, the Happiness Index, and win-loss ratios. It gives the app an educational and analytical dimension, appealing to users who are interested in the broader societal impact on sports performance.
+Access to individual player information throughout their career is a fantastic feature, especially for cricket fans who want to dig deep into player statistics and achievements. This can improve the overall cricketing experience. The ability to run live simulations with default teams or custom lineups is an appealing feature. It allows users to test strategies, create dream teams, and experience the excitement of live matches within the app. Displaying win-loss ratios for different countries in the ODI World Cup adds a competitive element to the app. Users can compare their customized team's performance to that of real-world national teams. Being capable to access summaries of previous encounters between two sides provides historical context. It allows users to research rivalries and historical events in cricket. Viewing a team's past performance, along with graphs, is a useful feature for those interested in in-depth analysis. It enables users to make data-driven decisions and understand team trends. It's interesting to see the correlation between GDP per capita, Happiness Index, and win-loss ratios of World Cup countries. It gives the app an educational and analytical dimension, appealing to users who are interested in the broader societal impact on sports performance.
