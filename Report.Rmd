@@ -21,9 +21,9 @@ library(shinyalert)
 library(dplyr)
 library(shinythemes)
 library(gt)
-library(plotly)
 library(rvest)
-
+library(dplyr)
+library(tidyverse)
 
 
 load("Data Sets/Cricket.RData")
@@ -51,22 +51,20 @@ Data for the first tab of shiny is in form of list , there are mainly two lists 
 
 ### Scraping of data
 
-Data for first tab that is a list witch contain batting and bowling data is scraped form a website named as Cricmatric you can go there from [here](http://www.cricmetric.com/index.py). First we formed a function and that give list to the function that is player name list then we got the data in output. Function for batting data can be seen by clicking [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/batting%20scrap%20function.R) and for bowling data click [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/scrap%20bowling%20data%20function.R) and for how we combine data in a list to see click [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/how_list_formed.R).
+Data for first tab that is a list which contain batting and bowling data is scraped form a website called [Cricmetric](http://www.cricmetric.com/index.py). First we formed a function and that give list to the function that is player name list then we got the data in output. Function for batting data can be seen by clicking [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/batting%20scrap%20function.R) and for bowling data click [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/scrap%20bowling%20data%20function.R) and for how we combine data in a list to see click [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/how_list_formed.R).
 
 Data stored in Teams_Table.Rdata is scraped from [Cricinfo](http://www.cricmetric.com/index.py) and can be seen by clicking [here](https://github.com/dootika/class-project-group_22/blob/main/Functions/Teams_Data.R). We save the table containing the ODI Matches data, along with a function team_filter, which filters out data of matches played by selected team.
 
-first of all we scraped different team's ODI data using the following code -
+First of all we scraped different team's ODI data using the following code -
 
 ```{r}
 #| echo: true
 #| eval: false
 #| warning: false
-library(tidyverse)
-library(ggplot2)
+
 
 table <- NULL
-
-for (i in 1971:1975) {
+for (i in 1971:2023) {
   print(i)
   html <- read_html(paste0("https://www.espncricinfo.com/records/year/team-match-results/", i, "-", i, "/one-day-internationals-2"))
   table1 <- html_table(html)[[1]]
@@ -166,38 +164,27 @@ conv_date <- function(date) {
   date <- paste0(y, "/", m, "/", d)
   return(date)
 }
-#table$`Match Date` <- as.Date(conv_date(table$`Match Date`))
+
 for (i in 1:length(table$`Match Date`)) {
   table$`Match Date`[i] <- conv_date(table$`Match Date`[i])
 }
 table$`Match Date` <- as.Date(table$`Match Date`)
 
-Team <- NULL
-for (t in teams()) {
-  tw <- t1 %>% filter(Winner == t)
-  tl <- t1 %>% filter(Loser == t)
-  Win <- NULL
-  Win_Score <- tw$Winner_Score
-  Loss_Score <- tl$Loser_Score
-  Score <- append(Win_Score, Loss_Score)
-  for (i in 1:length(Win_Score)) {
-    Win <- append(Win, "Won")
+Winning_Innings <- NULL
+for (i in 1:length(table$Margin)) {
+  if ((substr(table$Margin[i], nchar(table$Margin[i]) - 6, nchar(table$Margin[i]) - 1) == "wicket") | (substr(table$Margin[i], nchar(table$Margin[i]) - 5, nchar(table$Margin[i])) == "wicket")) {
+    Winning_Innings <- append(Winning_Innings, "Bowling")
   }
-  for (i in 1:length(Loss_Score)) {
-    Win <- append(Win, "Lost")
+  else {
+    Winning_Innings <- append(Winning_Innings, "Batting")
   }
-  Date <- append(tw$`Match Date`, tl$`Match Date`)
-  Name <- NULL
-  for (i in 1:(length(Win_Score) + length(Loss_Score))) {
-    Name <- append(Name, t)
-  }
-  dataset <- data.frame(Name, Score, Win, Date)
-  Team <- rbind(Team, dataset)
 }
-Team <- Team %>% arrange(Date)
+
+colnames(table)[7] <- "Match Date"
+table <- data.frame(table, Winning_Innings)
 
 team_filter <- function(team) {
-  table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
+  table <- table %>% select(Winner, Loser, Margin, Winning_Innings, Winner_Score, Loser_Score, Ground, `Match Date`)
   table1 <- table %>% filter(Winner == team | Loser == team)
   Team_Score <- NULL
   Opp_Score <- NULL
@@ -217,11 +204,153 @@ team_filter <- function(team) {
       Opponent = append(Opponent, table1$Winner[i])
     }
   }
-  table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team, Opponent, Team_Score, Opp_Score, Winner, Loser, Winner_Score, Loser_Score, Margin, Ground, 'Match Date')
+  table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team, Opponent, Winning_Innings, Team_Score, Opp_Score, Winner, Loser, Winner_Score, Loser_Score, Margin, Ground, 'Match Date')
   return(table1)
 }
+colnames(table)[7] <- "Match Date"
+save(table, team_filter, file = "Data Sets/Teams_Table.Rdata")
 
-save(table, team_filter, file = "Teams_Table.Rdata")
+```
+
+We also use this code to update the Team ODI Dataset, which instead of collecting the whole table again, checks if Cricinfo has added more matches, and only adds the new matches.
+
+```{r}
+#| echo: true
+#| eval: false
+#| warning: false
+
+load(file = "Data Sets/Teams_Table.Rdata")
+table2 <- NULL
+for (i in 1971:2023) {
+  print(i)
+  html <- read_html(paste0("https://www.espncricinfo.com/records/year/team-match-results/", i, "-", i, "/one-day-internationals-2"))
+  table1 <- html_table(html)[[1]]
+  table1 <- table1 %>% filter(X1 != "Team 1")
+  link <- html_elements(html, "a")
+  link <- html_attr(link, "href")
+  link <- unique(link)
+  link <- link[substr(link, 1, 8) == "/series/"]
+  table1 <- cbind(table1, paste0("https://www.espncricinfo.com", link))
+  table1 <- cbind(table1, numeric(dim(table1)[1]))
+  table1 <- cbind(table1, numeric(dim(table1)[1]))
+  table2 <- rbind(table2, table1)
+}
+colnames(table2) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
+
+table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied")
+
+d1 <- dim(table)[1]
+d2 <- dim(table2)[1]
+if (d1 == d2) {
+  stop("No new data.")
+}
+table2 <- table2[c(d1 + 1: d2),]
+table2 <- table2 %>% filter(!is.na(table2$`Team 1`))
+links <- table2$Link
+
+for (i in 1:dim(table2)[1]) {
+  print(i)
+  html <- read_html(links[i])
+  tables <- html_table(html)
+  table_1 <- tables[[1]]
+  table_2 <- tables[[3]]
+  name <- html_elements(html, "span")
+  name <- html_text(name)
+  name <- unique(name)
+  c1 <- table_1$R[dim(table_1)[1] - 2]
+  c2 <- table_2$R[dim(table_2)[1] - 2]
+  if (!is.na(as.integer(substr(table_1$R[dim(table_1)[1] - 1], 1, 1)))) {
+    c1 <- table_1$R[dim(table_1)[1] - 1]
+  }
+  if (!is.na(as.integer(substr(table_2$R[dim(table_2)[1] - 1], 1, 1)))) {
+    c2 <- table_2$R[dim(table_2)[1] - 1]
+  }
+  total_1 <- NULL
+  total_2 <- NULL
+  if (substr(c1, nchar(c1) - 1, nchar(c1) - 1) == "/") {
+    total_1 <- as.integer(substr(c1, 1, which(strsplit(c1, "")[[1]] == "/") - 1))
+  }
+  else {
+    total_1 <- as.integer(c1)
+  }
+  if (substr(c2, nchar(c2) - 1, nchar(c2) - 1) == "/") {
+    total_2 <- as.integer(substr(c2, 1, which(strsplit(c2, "")[[1]] == "/") - 1))
+  }
+  else {
+    total_2 <- as.integer(c2)
+  }
+  
+  winner <- table2$Winner[i]
+  loser <- NULL
+  if (table2$`Team 1`[i] == winner) {
+    loser <- table2$`Team 2`[i]
+  }
+  else {
+    loser <- table2$`Team 1`[i]
+  }
+  ind1 <- which(name == paste0(winner, " Innings"))
+  ind2 <- which(name == paste0(loser, " Innings"))
+  if (ind1 < ind2) {
+    table2$Winner_Score[i] <- total_1
+    table2$Loser_Score[i] <- total_2
+  }
+  else {
+    table2$Loser_Score[i] <- total_1
+    table2$Winner_Score[i] <- total_2
+  }
+}
+
+t1 <- table2
+Loser <- numeric(length(t1$`Team 1`))
+
+for (i in 1:length(Loser)) {
+  if (t1$Winner[i] == t1$`Team 1`[i]) {
+    Loser[i] = t1$`Team 2`[i]
+  }
+  if (t1$Winner[i] == t1$`Team 2`[i]) {
+    Loser[i] = t1$`Team 1`[i]
+  }
+}
+table2 <- cbind(t1, Loser)
+table2 <- table2 %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
+
+mon <- month.abb
+
+conv_date <- function(date) {
+  dd <- strsplit(date, " ")[[1]]
+  y <- dd[3]
+  m <- which(mon == dd[1], arr.ind = TRUE)
+  d <- dd[2]
+  if (!(gregexpr(pattern ='-',d)[[1]][1])) {
+    d <- substr(d, 1, nchar(d) - 1)
+  }
+  if (gregexpr(pattern ='-',d)[[1]][1]) {
+    d <- substr(d, gregexpr(pattern ='-',d)[[1]][1] + 1, nchar(d) - 1)
+  }
+  date <- paste0(y, "/", m, "/", d)
+  return(date)
+}
+
+for (i in 1:length(table2$`Match Date`)) {
+  table2$`Match Date`[i] <- conv_date(table2$`Match Date`[i])
+}
+table2$`Match Date` <- as.Date(table2$`Match Date`)
+
+Winning_Innings <- NULL
+for (i in 1:length(table2$Margin)) {
+  if ((substr(table2$Margin[i], nchar(table2$Margin[i]) - 6, nchar(table2$Margin[i]) - 1) == "wicket") | (substr(table2$Margin[i], nchar(table2$Margin[i]) - 5, nchar(table2$Margin[i])) == "wicket")) {
+    Winning_Innings <- append(Winning_Innings, "Bowling")
+  }
+  else {
+    Winning_Innings <- append(Winning_Innings, "Batting")
+  }
+}
+
+
+table2 <- data.frame(table2, Winning_Innings)
+colnames(table2)[7] <- "Match Date"
+table <- rbind(table, table2)
+save(table, team_filter, file = "Data Sets/Teams_Table.Rdata")
 ```
 
 After that we scraped player's individual bowling and batting data using the following code chunks -
@@ -449,15 +578,13 @@ for ( i in 5:length(Team)){
 
 
 
-the GDP per Capital data for diffrent contries is stored using the .csv with this little piece of code -
+The GDP per Capital data was initially downloaded from [kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv). It is cleaned to be used with the dataset collected, using this code.
 
 ```{r}
 #| echo: true
 #| eval: false
 #| warning: false
-gdp <- read.csv("../gdp_per_capita.csv")
-gdp
-typeof(gdp$X1960)
+gdp <- read.csv("Data Sets/gdp_per_capita.csv")
 for (i in 3:63) {
   colnames(gdp)[i] <- 1957 + i
 }
@@ -478,10 +605,10 @@ for (i in 1:length(gdp$Country.Name)) {
   }
 }
 gdp
-save(gdp, file = "../gdp_per_capita.csv")
+save(gdp, file = "Data Sets/gdp_per_capita.csv")
 ```
 
-
+The Happiness Index data was downloaded from [kaggle](https://www.kaggle.com/datasets/simonaasm/world-happiness-index-by-reports-2013-2023/?select=World+Happiness+Index+by+Reports+2013-2023+with+nulls.csv).
 
 ## App Overview
 
@@ -579,7 +706,7 @@ x
 To represent different countries that take part in the ODI world cup each, we used the following code to mark their coordinates and display them in the world map -
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: true
 #| warning: false
 library(ggplot2)
@@ -758,6 +885,9 @@ ggplot(t, aes(x = Date, y = Score, col = Team)) + geom_point()
 -   **Match Up Table**: Users can see who won how many matches in their previous encounters, and in which innings.
 
 ```{r}
+#| echo: false
+#| eval: true
+
 y1 <- 1971
 y2 <- 2023
 t1 <- "Australia"
@@ -955,7 +1085,7 @@ data
         labs(title ="Batsman Performance" ,x = "Batsman Name", y = "Total Runs", 
              shape = "Wicketeer", color = "No of Four", size = "No of Six") +
         theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position = "none")
-      ggplotly(p, tooltip = c("batsman_name", "Runs", "four", "six", "batsman_outer"))
+p
 ```
 
 ```{r}
@@ -985,7 +1115,7 @@ we used the following code block to run the simulation for cricket match between
 #| echo: true
 #| eval: true
 #| warning: false
-library(dplyr)
+
 
 
 Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
@@ -1361,7 +1491,7 @@ The R code for the Shiny app demonstrates proficiency in utilizing the Shiny pac
 
 -   What is the correlation between a country's performance and its GDP and its Happiness index?
 
--   Can i get a visual representations of data using graphs and chart?
+-   Can I get a visual representations of data using graphs and chart?
 
 -   Can I view a team's recent performance statistics, such as recent form and trends?
 
