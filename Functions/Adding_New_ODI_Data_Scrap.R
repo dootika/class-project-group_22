@@ -18,10 +18,11 @@ for (i in 1971:2023) {
   table1 <- cbind(table1, numeric(dim(table1)[1]))
   table2 <- rbind(table2, table1)
 }
+
 colnames(table2) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
 
 table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied") %>% filter(Margin != "-")
-
+table2 <- rbind(c("England", "New Zealand", "England", "0 runs", "Lord's", "2019-07-14", "Scorecard", "Link", 241, 241), table2)
 d1 <- dim(table)[1]
 d2 <- dim(table2)[1]
 if (d1 == d2) {
@@ -30,7 +31,6 @@ if (d1 == d2) {
 table2 <- table2[c(d1 + 1: d2),]
 table2 <- table2 %>% filter(!is.na(table2$`Team 1`))
 links <- table2$Link
-
 for (i in 1:dim(table2)[1]) {
   print(i)
   html <- read_html(links[i])
@@ -52,14 +52,12 @@ for (i in 1:dim(table2)[1]) {
   total_2 <- NULL
   if (substr(c1, nchar(c1) - 1, nchar(c1) - 1) == "/") {
     total_1 <- as.integer(substr(c1, 1, which(strsplit(c1, "")[[1]] == "/") - 1))
-  }
-  else {
+  } else {
     total_1 <- as.integer(c1)
   }
   if (substr(c2, nchar(c2) - 1, nchar(c2) - 1) == "/") {
     total_2 <- as.integer(substr(c2, 1, which(strsplit(c2, "")[[1]] == "/") - 1))
-  }
-  else {
+  } else {
     total_2 <- as.integer(c2)
   }
   
@@ -67,8 +65,7 @@ for (i in 1:dim(table2)[1]) {
   loser <- NULL
   if (table2$`Team 1`[i] == winner) {
     loser <- table2$`Team 2`[i]
-  }
-  else {
+  } else {
     loser <- table2$`Team 1`[i]
   }
   ind1 <- which(name == paste0(winner, " Innings"))
