@@ -194,7 +194,7 @@ v <- c("England", "New Zealand", "0 runs", 241, 241, "Lord's", "2019-07-14",
 "Bowling")
 table <- rbind(table, v)
 table$`Match Date` <- as.Date(table$`Match Date`)
-table <- table %>% arrange(table$`Match Date`)
+
 
 # This is to determine which team won, based on which innings it played.
 
@@ -210,6 +210,7 @@ for (i in 1:length(table$Margin)) {
 
 colnames(table)[7] <- "Match Date"
 table <- data.frame(table, Winning_Innings)
+table[4491, 7] <- as.Date("2019-07-14")
 
 # This function filters out matches played by a certain team selected.
 
@@ -241,6 +242,7 @@ team_filter <- function(team) {
   return(table1)
 }
 colnames(table)[7] <- "Match Date"
+table <- table %>% arrange(table$`Match Date`)
 save(table, team_filter, file = "Data Sets/Teams_Table.Rdata")
 
 ```
