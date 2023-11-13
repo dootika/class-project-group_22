@@ -277,9 +277,10 @@ colnames(table2) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground",
 "Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
 
 table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied") %>% filter(Margin != "-")
+table2 <- rbind(c("England", "New Zealand", "England", "0 runs", "Lord's", "2019-07-14", "Scorecard", "Link", 241, 241), table2)
 
 d1 <- dim(table)[1]
-d2 <- dim(table2)[1] + 1
+d2 <- dim(table2)[1]
 
 # Checks if any new matches have been played since we last scraped.
 If no, then it stops. If yes, it adds only the new matches, similar to the original scrape code.
