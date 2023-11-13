@@ -44,13 +44,9 @@ year <- function(da) {
 
 This report provides a detailed analysis of the Shiny app developed for cricket player ODI data .The app is designed to allow users to interact with cricket data in a user-friendly manner, providing insights into player performance, team statistics, match simulations, and more.
 
-
 ## Data
 
 Data for the first tab of shiny is in form of list , there are mainly two lists which are named as Player_data and Player_name . In Player_data list data which is scraped is saved in well defined format with respect to player with there country . In Player_name list all player named are saved with respect to there country . The interesting thing in data saving is that the list named are of country name and of player name and in a list there is another list i.e in Player_data list there is a list for country names and in that there is a list named after players. And the same data is used to simulate the Cricket Match . Data for the second tab is saved in the form of an Rdata called Teams_Table.Rdata, which saves data in the form of a table called table, and a function called team_filter which collects data of all matches which are played by a certain team. That file saves the data of all matches, including the winners, losers, their scores, margins and more. Happiness_Index.csv saves the data of Happiness Index of countries from 2013 to 2023. gdp_per_capita.csv saves data of GDP per Capita of countries.
-
-
-
 
 ### Scraping of data
 
@@ -247,9 +243,7 @@ save(table, team_filter, file = "Data Sets/Teams_Table.Rdata")
 
 ```
 
-We also use this code to update the Team ODI Dataset,
-which instead of collecting the whole table again,
-checks if Cricinfo has added more matches, and only adds the new matches.
+We also use this code to update the Team ODI Dataset, which instead of collecting the whole table again, checks if Cricinfo has added more matches, and only adds the new matches.
 
 ```{r}
 #| echo: true
@@ -509,7 +503,7 @@ Scrap_Bating_data <- function(name){
               Not_Out_Rate = {Innings-Outs}/Innings)
   
   xy <- Main[,c(1,3,4)]        # making a subset of the data 
-  # now i will melt the data so it will be easy to plot in a effective way
+  # now we will melt the data so it will be easy to plot in a effective way
   xy <- melt(xy,"Year")              
   text <- Main$Rate            # now the below 4_5 lines are of ploting 
   text <- append(text,Main$Not_Out_Rate)
@@ -539,7 +533,7 @@ Scrap_Bating_data <- function(name){
   Threes <-  pro/ToB
   zeros <- 1-Ones - Twos - Threes - Fours - Sixs
   x <- NULL
-  x[1] <- zeros                 # here i am saving the probablities and plot and cleaned data 
+  x[1] <- zeros                 # here we am saving the probablities and plot and cleaned data 
   x[2] <- Ones
   x[3] <- Twos
   x[4] <- Threes
@@ -555,7 +549,6 @@ Scrap_Bating_data <- function(name){
 ```
 
 Now using these two function data is scraped below is the code:
-
 
 ```{r}
 #| echo: true
@@ -654,11 +647,7 @@ for ( i in 5:length(Team)){
 }
 ```
 
-
-
-The GDP per Capital data was initially downloaded from -
-[kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv).
-It is cleaned to be used with the dataset collected, using this code.
+The GDP per Capital data was initially downloaded from - [kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv). It is cleaned to be used with the dataset collected, using this code.
 
 ```{r}
 #| echo: true
@@ -690,10 +679,10 @@ for (i in 1:length(gdp$Country.Name)) {
 save(gdp, file = "Data Sets/gdp_per_capita.csv")
 ```
 
-The Happiness Index data was downloaded from - 
-[kaggle](https://www.kaggle.com/datasets/simonaasm/world-happiness-index-by-reports-2013-2023/?select=World+Happiness+Index+by+Reports+2013-2023+with+nulls.csv).
+The Happiness Index data was downloaded from - [kaggle](https://www.kaggle.com/datasets/simonaasm/world-happiness-index-by-reports-2013-2023/?select=World+Happiness+Index+by+Reports+2013-2023+with+nulls.csv).
 
 This code is used to get the Coordinates of the teams in a workable format.
+
 ```{r}
 #| echo: true
 #| eval: false
@@ -732,17 +721,13 @@ coord <- r
 save(coord, file = "Data Sets/Cricket_Coord.RData")
 ```
 
-
 ## App Overview
 
-The Shiny app consists of Three tabs, each dedicated to a specific aspect of cricket analysis.
-Now one by one deep explanation is below :
-
+The Shiny app consists of Three tabs, each dedicated to a specific aspect of cricket analysis. Now one by one deep explanation is below :
 
 ### Player ODI Data
 
-This tab allows users to explore individual player statistics for One Day International (ODI) matches.
-Users can select a country, choose a player, and specify whether they want to view batting or bowling statistics.
+This tab allows users to explore individual player statistics for One Day International (ODI) matches. Users can select a country, choose a player, and specify whether they want to view batting or bowling statistics.
 
 ![](pictures/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_29_47.png)
 
@@ -754,8 +739,7 @@ Users can select a country, choose a player, and specify whether they want to vi
 
 -   **Player Image**: An image of the selected player is displayed.
 
--   **Player Data Table**: Detailed statistics of the selected player are presented in a table format.
-    This will be like:-
+-   **Player Data Table**: Detailed statistics of the selected player are presented in a table format. This will be like:-
 
 ```{r}
 #| echo: false
@@ -779,8 +763,7 @@ Player_Data$India$`Virat Kohli`$Batting[3]
 This sub-tab provides a global perspective of ODI match outcomes. Users can adjust the year range to view trends over time.
 
 -   **Year Selection Slider**: Users can adjust the range of years they want to analyze.
--   **World Map Plot**: Users can visualise the Win to Loss Ratio of each team, color coded, in a time frame.
-      ![](pictures/World_Slider.png){width="400"}
+-   **World Map Plot**: Users can visualise the Win to Loss Ratio of each team, color coded, in a time frame. ![](pictures/World_Slider.png){width="400"}
 
 ```{r}
 #| echo: false
@@ -839,15 +822,13 @@ x <- as_tibble(WL %>% arrange(desc(W_L)) %>% filter(!is.na(W_L)))
 x
 ```
 
-
 #### Team Overview
 
 This sub-tab allows users to select a specific team and view a summary of their performance over selected years.
 
 -   **Team Selection Dropdown**: Users can choose their ODI team from a dropdown menu.
 
--   **Year Range Slider**: Users can specify the range of years they want to analyze.
-    ![](pictures/Team_Summary_Input.png){width="400"}
+-   **Year Range Slider**: Users can specify the range of years they want to analyze. ![](pictures/Team_Summary_Input.png){width="400"}
 
 -   **Team Summary**:
 
@@ -1004,8 +985,7 @@ tb
 
 This sub-tab provides insights into the correlation between a country's happiness index and its cricket team's performance.
 
--   **General View**: This view is to show the correlation of Happiness Index with the Win to Loss Ratio of the selected countries.
-    ![](pictures/Happiness_General_Input.png){width="400"}
+-   **General View**: This view is to show the correlation of Happiness Index with the Win to Loss Ratio of the selected countries. ![](pictures/Happiness_General_Input.png){width="400"}
 
 ```{r}
 #| echo: false
@@ -1055,7 +1035,7 @@ barplot(names = Countries, height = Correlation, xlab = "Countries", ylab = "Cor
     #| echo: false
     #| eval: true
 
-    
+
     y1 <- happy %>% filter(Country == "India")
     y2 <- team_filter("India")
     Year <- NULL
@@ -1173,8 +1153,7 @@ This tab allows users to simulate a cricket match between two teams. Users can s
 -   **Team Selection**: Users can choose existing teams or create new teams by selecting players.
 -   **Player Selection**: Users can select players for the teams.
 -   **Start Match Button**: Initiates the match simulation.
--   **Match Outcome**: Displays the results of the simulated match, including scores, batting, and bowling performances.
-    Outcome will be of batting data table and there visualisation as follows :-
+-   **Match Outcome**: Displays the results of the simulated match, including scores, batting, and bowling performances. Outcome will be of batting data table and there visualisation as follows :-
 
 ```{r}
 #| echo: false
@@ -1285,7 +1264,7 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
       batsman_run[6*(i-1) + j] <- 0        
       Batsman_6[6*(i-1) + j] <- 0
       Batsman_4[6*(i-1) + j] <- 0
-      # here i take a sample of out or not on based of probablities that we calculated by data that was scraped
+      # here we take a sample of out or not on based of probablities that we calculated by data that was scraped
       Sam <- sample(c("Out","Not_Out"),1,replace = TRUE,prob = c(Team_Data_2[[Or]]$Bowling[[1]],1-Team_Data_2[[Or]]$Bowling[[1]]))     
      
        # what if player will not out obeviously it will hit some runs or zero can be there
@@ -1595,29 +1574,27 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
 
 ## Code Evaluation
 
-The R code for the Shiny app demonstrates proficiency in utilizing the Shiny package, data manipulation, and visualization techniques.
-The app's functionality is well-organized, allowing for seamless interaction with the cricket data.
-You can find codes here.[Click here](https://github.com/dootika/class-project-group_22)
+The R code for the Shiny app demonstrates proficiency in utilizing the Shiny package, data manipulation, and visualization techniques. The app's functionality is well-organized, allowing for seamless interaction with the cricket data. You can find codes here.[Click here](https://github.com/dootika/class-project-group_22)
 
 ## Interesting data-driven questions to think about
 
 -   What is the correlation between a country's performance and its GDP and its Happiness index?
 
--   Can I get a visual representations of data using graphs and chart?
+-   Can we get a visual representations of data using graphs and chart?
 
--   Can I view a team's recent performance statistics, such as recent form and trends?
+-   Can we view a team's recent performance statistics, such as recent form and trends?
 
--   How can I access a summary of each previous encounter between two sides in the app?
+-   How can we access a summary of each previous encounter between two sides in the app?
 
--   Can I filter match history by specific teams, years, or tournaments?
+-   Can we filter match history by specific teams, years, or tournaments?
 
 -   Is there a feature to watch or re-enact classic matches from the past?
 
--   Can I find the win-loss ratio for different countries participating in the ODI World Cup?
+-   Can we find the win-loss ratio for different countries participating in the ODI World Cup?
 
 -   Are historical statistics and records available for past World Cup tournaments?
 
--   Can I choose between default teams or create a custom team with my favorite players?
+-   Can we choose between default teams or create a custom team with my favorite players?
 
 -   What level of control and customization is available during the match simulation?
 
