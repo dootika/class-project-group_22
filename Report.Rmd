@@ -87,7 +87,7 @@ colnames(table) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Da
 
 # This is to remove all matches, which were Draws or Ties. This does not allow us to scrape data of the World Cup 2019 finals. However, we add this data separately in the end.
 
-table <- table %>% filter(Winner != "no result") %>% filter(Winner != "tied")
+table <- table %>% filter(Winner != "no result") %>% filter(Winner != "tied") %>% filter(Margin != "-")
 links <- table$Link
 
 # We go to the site containing the scorecard of each individual match, to scrape the scores of each team, and the winner, using the link in the previously scraped table.
@@ -263,7 +263,7 @@ for (i in 1971:2023) {
 }
 colnames(table2) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
 
-table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied")
+table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied") %>% filter(Margin != "-")
 
 d1 <- dim(table)[1]
 d2 <- dim(table2)[1] + 1
