@@ -42,7 +42,7 @@ year <- function(da) {
 
 # Introduction
 
-This report provides a detailed analysis of the Shiny app developed for cricket player ODI data . The app is designed to allow users to interact with cricket data in a user-friendly manner, providing insights into player performance, team statistics, match simulations, and more.
+This report provides a detailed analysis of the Shiny app developed for cricket player ODI data .The app is designed to allow users to interact with cricket data in a user-friendly manner, providing insights into player performance, team statistics, match simulations, and more.
 
 
 ## Data
@@ -86,12 +86,15 @@ for (i in 1971:2023) {
 colnames(table) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date",
 "Scorecard", "Link", "Winner_Score", "Loser_Score")
 
-# This is to remove all matches, which were Draws or Ties. This does not allow us to scrape data of the World Cup 2019 finals. However, we add this data separately in the end.
+# This is to remove all matches, which were Draws or Ties.
+This does not allow us to scrape data of the World Cup 2019 finals.
+However, we add this data separately in the end.
 
 table <- table %>% filter(Winner != "no result") %>% filter(Winner != "tied") %>% filter(Margin != "-")
 links <- table$Link
 
-# We go to the site containing the scorecard of each individual match, to scrape the scores of each team, and the winner, using the link in the previously scraped table.
+# We go to the site containing the scorecard of each individual match,
+to scrape the scores of each team, and the winner, using the link in the previously scraped table.
 
 for (i in 1:dim(table)[1]) {
   print(i)
@@ -163,7 +166,8 @@ table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Grou
 
 mon <- month.abb
 
-# This is to convert the Match Date of the table to a usable form, such that it can be converted to Date type in R.
+# This is to convert the Match Date of the table to a usable form,
+such that it can be converted to Date type in R.
 
 conv_date <- function(date) {
   dd <- strsplit(date, " ")[[1]]
@@ -241,7 +245,9 @@ save(table, team_filter, file = "Data Sets/Teams_Table.Rdata")
 
 ```
 
-We also use this code to update the Team ODI Dataset, which instead of collecting the whole table again, checks if Cricinfo has added more matches, and only adds the new matches.
+We also use this code to update the Team ODI Dataset,
+which instead of collecting the whole table again,
+checks if Cricinfo has added more matches, and only adds the new matches.
 
 ```{r}
 #| echo: true
@@ -275,7 +281,8 @@ table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied") 
 d1 <- dim(table)[1]
 d2 <- dim(table2)[1] + 1
 
-# Checks if any new matches have been played since we last scraped. If no, then it stops. If yes, it adds only the new matches, similar to the original scrape code.
+# Checks if any new matches have been played since we last scraped.
+If no, then it stops. If yes, it adds only the new matches, similar to the original scrape code.
 
 if (d1 == d2) {
   stop("No new data.")
@@ -399,18 +406,21 @@ For Bowling Data -
 #| eval: false
 #| warning: false
 Scrap_Bowling_data <- function(name){
-  name1 <- gsub(pattern = " ", replacement = "+", name )   # removing spaces and adding + sign between them to make links 
+ # removing spaces and adding + sign between them to make links 
+  name1 <- gsub(pattern = " ", replacement = "+", name )   
   link <- paste0("http://www.cricmetric.com/playerstats.py?player=",name1,"&role=bowler&format=ODI&groupby=year")
   # name <- read_html(link) %>% html_element(".panel-heading") %>% html_text2()
   data <- read_html(link) %>%            # scraping data from the websites 
     html_table()
   Data <- data[[1]]
   row_number <- dim(Data)[1]       # taking the no of rowns of the data set 
-  Data$Runs <-  gsub(pattern = ",",replacement = "",x = Data$Runs)      # removing commas so that the the value can be changed itno numberic 
+  # removing commas so that the the value can be changed itno numberic 
+  Data$Runs <-  gsub(pattern = ",",replacement = "",x = Data$Runs)      
   Data$Overs <- gsub(pattern = ",",replacement = "",x = Data$Overs)
   Data$'4s' <- gsub(pattern = ",",replacement = "",x = Data$'4s')
-  
-  Data$Innings <- as.numeric(Data$Innings)         # making vakues in numeric formet
+
+  # making vakues in numeric format
+  Data$Innings <- as.numeric(Data$Innings)         
   Data$Runs <- as.numeric(Data$Runs)
   Data$Overs <- as.numeric(Data$Overs)
   Data$Wickets <- as.numeric(Data$Wickets)
@@ -419,8 +429,10 @@ Scrap_Bowling_data <- function(name){
   Data$'4s' <- as.numeric(Data$'4s')
   Data$'6s' <- as.numeric(Data$'6s')
   Data1 <- Data         # making copy of the data 
-  Data <- Data[-c(row_number),]      # rremoving last row of the data that is of totoal of the columns values 
-  Main <- Data %>%        # now summarising the data to make it in useful way and easy to read
+  # removing last row of the data that is of totoal of the columns values
+  Data <- Data[-c(row_number),] 
+  # now summarising the data to make it in useful way and easy to read
+  Main <- Data %>%        
     select(Year ,Runs ,Overs, Innings , Wickets) %>%
     summarise(Year = Year ,
               Runs_per_Inning = round({Runs/Innings},3),
@@ -428,14 +440,16 @@ Scrap_Bowling_data <- function(name){
     )
   xy <- Main[,c(1,2,3)]  # making another subset of the data to make plot 
   xy <- melt(xy,"Year")
-  
-  ggp <- ggplot(xy , aes(x = Year , y = value , fill = variable )) +          # ploting the data 
+
+  # ploting the data
+  ggp <- ggplot(xy , aes(x = Year , y = value , fill = variable )) +           
     geom_bar(stat = "identity", width = 0.5,position = position_dodge(width = 0.7)) + 
     labs(x = "Years" , y = "Number of Wickets Or Runs Per Year ", title =paste0(name,"'s Performance") )
   
  
   xz  <- Data1[c(row_number),]
-  some <- as.numeric(xz[1,5]/xz[1,3])      # taking output that are probablities plot and data set that we have cleaned 
+  # taking output that are probablities plot and data set that we have cleaned
+  some <- as.numeric(xz[1,5]/xz[1,3])      
   output <- list(length(3))
   output[[1]] <- some/6
   output[[2]] <- Data
@@ -451,21 +465,26 @@ For Batting Data -
 #| eval: false
 #| warning: false
 Scrap_Bating_data <- function(name){
- # function will take input a name that will be a name of a cricket player 
-  name1 <- gsub(pattern = " ", replacement = "+", name )         # here i will replace spaces with + so i can form a link 
-  link <- paste0("http://www.cricmetric.com/playerstats.py?player=",name1,"&role=batsman&format=ODI&groupby=year")   # here i formed a link 
+ # function will take input a name that will be a name of a cricket player
+  # here we will replace spaces with + so we can form a link
+  name1 <- gsub(pattern = " ", replacement = "+", name ) 
+  # here we formed a link
+  link <- paste0("http://www.cricmetric.com/playerstats.py?player=",name1,"&role=batsman&format=ODI&groupby=year") 
 
-  data <- read_html(link) %>%            # here i scraped a batting data from the website Cricmetirc
+  # here we scraped a batting data from the website Cricmetirc
+  data <- read_html(link) %>%            
     html_table()
-  Data <- data[[1]]   # i will select first tibble that is of batting data that i targeted
+  # we will select first tibble that is of batting data that we targeted
+  Data <- data[[1]]   
   row_number <-dim(Data)[1]
-  Data$Runs <-  gsub(pattern = ",",replacement = "",x = Data$Runs)   # removing commas from the digits
+  # removing commas from the digits
+  Data$Runs <-  gsub(pattern = ",",replacement = "",x = Data$Runs)   
   Data$Balls <- gsub(pattern = ",",replacement = "",x = Data$Balls)
   Data$'4s' <- gsub(pattern = ",",replacement = "",x = Data$'4s')
   
   
-  
-  Data$Innings <- as.numeric(Data$Innings)       # taking all the charahtere value as a numeric value so that r can recoganise it 
+  # taking all the charahtere value as a numeric value so that r can recoganise it
+  Data$Innings <- as.numeric(Data$Innings)        
   Data$Runs <- as.numeric(Data$Runs)
   Data$Balls <- as.numeric(Data$Balls)
   Data$Outs <- as.numeric(Data$Outs)
@@ -488,18 +507,22 @@ Scrap_Bating_data <- function(name){
               Not_Out_Rate = {Innings-Outs}/Innings)
   
   xy <- Main[,c(1,3,4)]        # making a subset of the data 
-  xy <- melt(xy,"Year")             # now i will melt the data so it will be easy to plot in a effective way 
-  text <- Main$Rate                 # now the below 4_5 lines are of ploting 
+  # now i will melt the data so it will be easy to plot in a effective way
+  xy <- melt(xy,"Year")              
+  text <- Main$Rate            # now the below 4_5 lines are of ploting 
   text <- append(text,Main$Not_Out_Rate)
   text <- round(text,3)
   Data5 <- tibble(xy,text)
-  ggp <- ggplot(Data5 , aes(x = Year , y = value , fill = variable )) +                    # here i defined the ggplot 
+  # here we will define ggplot
+  ggp <- ggplot(Data5 , aes(x = Year , y = value , fill = variable )) +                     
     geom_bar(stat = "identity", width = 0.5,position = position_dodge(width = 0.7)) + 
     geom_text(aes(label=text), vjust=1.5, colour="black", size=3) +
     labs(x = "Years" , y = "Number of Balls Or Runs ", title =paste0(name,"'s Performance") )
   
-  
-  xz  <- Data1[c(row_number),]    # now use the last row of the data set to make some usful  things that will help us to get some idea about the runs rates and probablities of the player to hit runs 
+
+  # now use the last row of the data set to make some usful things ,
+  that will help us to get some idea about the runs rates and probablities of the player to hit runs
+  xz  <- Data1[c(row_number),]     
   Fours <- as.numeric(xz[1,11]/xz[1,4])
   Sixs <- as.numeric(xz[1,12]/xz[1,4])
   
@@ -547,7 +570,8 @@ Team_Player <- read_html("https://www.thecricketer.com/Topics/mens-world-cup-202
   html_elements("#wl_f813f7 p") %>%
   html_text2()
 
-# now we facing problem from here , player names are not correct come extra things are coming for cleaning the names we do the following things
+# now we facing problem from here,
+player names are not correct come extra things are coming for cleaning the names we do the following things
 Team_Player <- Team_Player[-c(1:3,14)]
 
 Team_Player <- gsub("[(c)]","",Team_Player)
@@ -614,7 +638,8 @@ for(i in seq_along(Team)) {
 
 
 ###############################################################################
-# from here we get the list of player and now we scrap the data in a such way that we can store then together for further use 
+# from here we get the list of player and now we scrap the data in a such way 
+that we can store then together for further use 
 country <- list()
 
 for ( i in 5:length(Team)){
@@ -629,7 +654,8 @@ for ( i in 5:length(Team)){
 
 
 
-The GDP per Capital data was initially downloaded from [kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv).
+The GDP per Capital data was initially downloaded from -
+[kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv).
 It is cleaned to be used with the dataset collected, using this code.
 
 ```{r}
@@ -662,7 +688,8 @@ for (i in 1:length(gdp$Country.Name)) {
 save(gdp, file = "Data Sets/gdp_per_capita.csv")
 ```
 
-The Happiness Index data was downloaded from [kaggle](https://www.kaggle.com/datasets/simonaasm/world-happiness-index-by-reports-2013-2023/?select=World+Happiness+Index+by+Reports+2013-2023+with+nulls.csv).
+The Happiness Index data was downloaded from - 
+[kaggle](https://www.kaggle.com/datasets/simonaasm/world-happiness-index-by-reports-2013-2023/?select=World+Happiness+Index+by+Reports+2013-2023+with+nulls.csv).
 
 This code is used to get the Coordinates of the teams in a workable format.
 ```{r}
@@ -750,7 +777,8 @@ Player_Data$India$`Virat Kohli`$Batting[3]
 This sub-tab provides a global perspective of ODI match outcomes. Users can adjust the year range to view trends over time.
 
 -   **Year Selection Slider**: Users can adjust the range of years they want to analyze.
--   **World Map Plot**: Users can visualise the Win to Loss Ratio of each team, color coded, in a time frame. ![](pictures/World_Slider.png){width="400"}
+-   **World Map Plot**: Users can visualise the Win to Loss Ratio of each team, color coded, in a time frame.
+      ![](pictures/World_Slider.png){width="400"}
 
 ```{r}
 #| echo: false
@@ -1143,7 +1171,8 @@ This tab allows users to simulate a cricket match between two teams. Users can s
 -   **Team Selection**: Users can choose existing teams or create new teams by selecting players.
 -   **Player Selection**: Users can select players for the teams.
 -   **Start Match Button**: Initiates the match simulation.
--   **Match Outcome**: Displays the results of the simulated match, including scores, batting, and bowling performances.Outcome will be of batting data table and there visualisation as follows :-
+-   **Match Outcome**: Displays the results of the simulated match, including scores, batting, and bowling performances.
+    Outcome will be of batting data table and there visualisation as follows :-
 
 ```{r}
 #| echo: false
@@ -1250,22 +1279,26 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
       if(Ind == 11){         # this is also same when 11 player come to bet the loop will break and function will stop so that match will stop 
         break
       }
-      batsman_run[6*(i-1) + j] <- 0        # i defined the values zero so that is this veriable in function not take any value then NA will not come zero will come if it takes value that it will be replaced
+      # We defined the values zero so that is this variable in function not take any value then NA will not come zero will come if it takes value that it will be replaced
+      batsman_run[6*(i-1) + j] <- 0        
       Batsman_6[6*(i-1) + j] <- 0
       Batsman_4[6*(i-1) + j] <- 0
-      Sam <- sample(c("Out","Not_Out"),1,replace = TRUE,prob = c(Team_Data_2[[Or]]$Bowling[[1]],1-Team_Data_2[[Or]]$Bowling[[1]]))    # here i take a sample of out or not on based of probablities that we calculated by data that was scraped 
+      # here i take a sample of out or not on based of probablities that we calculated by data that was scraped
+      Sam <- sample(c("Out","Not_Out"),1,replace = TRUE,prob = c(Team_Data_2[[Or]]$Bowling[[1]],1-Team_Data_2[[Or]]$Bowling[[1]]))     
      
-      
-       if(Sam == "Not_Out"){              # what if player will not out obeviously it will hit some runs or zero can be there
+       # what if player will not out obeviously it will hit some runs or zero can be there
+       if(Sam == "Not_Out"){              
   #      print(Team_Data_1[[Ind]]$Batting[[1]])
-        Run <- sample(c(0,1,2,3,4,6),1,replace = TRUE,prob = Team_Data_1[[Ind]]$Batting[[1]])    # this is the sample witch is based of players probablity to hit runs  according to previoud data 
+        #this is the sample witch is based of players probablity to hit runs  according to previoud data
+        Run <- sample(c(0,1,2,3,4,6),1,replace = TRUE,prob = Team_Data_1[[Ind]]$Batting[[1]])     
           
         
          Runs <- Runs + Run
-        over[j] <- Run                      ##### here i will store the values in variables
+        over[j] <- Run                      ##### here we will store the values in variables
         batsman_name[6*(i-1) + j] <- Team_name_1[Ind]
         batsman_run[6*(i-1) + j] <- Run
-        if(Run == 1 || Run == 3){            # we know when there are 1 or 3 run strike changes that i done here 
+        # we know when there are 1 or 3 run strike changes that we have done here
+        if(Run == 1 || Run == 3){             
           
           
           nam <- Team_name_1[Ind]
@@ -1283,7 +1316,7 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
         }
         
         
-        if (Run == 4){                    # if 4 runs i will store it in a variable 
+        if (Run == 4){                    # if 4 runs we will store it in a variable 
           Batsman_4[6*(i-1)+j] <- 1
         }
         
@@ -1298,13 +1331,13 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
       
       else {
         
-        batsman_name[6*(i-1) + j] <- Team_name_1[Ind]     # what if player got out           # here i store wicket and bowlers name
+        batsman_name[6*(i-1) + j] <- Team_name_1[Ind]   # what if player got out       # here we store wicket and bowlers name
         batsman_outer[6*(i-1)+j] <- Team_name_2[Or]
         Ind <- Ind + 1
         Wicket <- Wicket + 1
         over[j] <- 0
       }
-      if (j == 6 ){          # this is the last ball of the over strike will change so  i do it here 
+      if (j == 6 ){          # this is the last ball of the over,strike will change so we do it here 
         
         nam <- Team_name_1[Ind]
         nam_ <- Team_name_1[Ind + 1]
@@ -1332,8 +1365,8 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
       
     }
     
-    baller_data <- tibble(Baller_name, Ball_runs,B_wicket )           # here i make tibble of all the data that a got from above loops 
-    baller_data <- baller_data %>%                                    # here i arrange then in a useful way 
+    baller_data <- tibble(Baller_name, Ball_runs,B_wicket )        # here we make tibble of all the data that a got from above loops 
+    baller_data <- baller_data %>%                                 # here we arrange then in a useful way 
       group_by(Baller_name) %>%
       summarise(Runs = sum(Ball_runs),
                 Wicket = sum(B_wicket)) %>%
@@ -1341,14 +1374,14 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
   
   
     batsman_data <- tibble( batsman_name, Batsman_6 ,Batsman_4,batsman_run )
-    batsman_data <- batsman_data %>%                                             # this is of batsman data 
+    batsman_data <- batsman_data %>%                               # this is of batsman data 
       group_by(batsman_name) %>%
       summarise(six = sum(Batsman_6),
                 four = sum(Batsman_4),
                 Runs = sum(batsman_run))
   
     batsman_outer <- as.vector(na.omit(batsman_outer))
-    len <- dim(batsman_data)[1]                                # some na are introduced so i remove them 
+    len <- dim(batsman_data)[1]                                # some na are introduced so we removed them 
     
     if( length(batsman_outer) != len){
       for ( i in {length(batsman_outer) + 1}:len){
@@ -1359,7 +1392,7 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
     
     
     
-    team_1_run <- sum(batsman_data$Runs)                  # savinf all useful thing in a list so i can take them in a return 
+    team_1_run <- sum(batsman_data$Runs)           # savinf all useful thing in a list so we can take them in a return 
     team_2_wicket <- sum(baller_data$Wicket)
     
     output_1 <- list(length(2))
@@ -1367,7 +1400,7 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
     output_1[[2]] <- baller_data
   }
   #####################
-  # Team 2 Bats                                    # here the same process for inning 2 so i will not explain it 
+  # Team 2 Bats                                    # here, the same process for inning 2  
   ####################
   
   {  
