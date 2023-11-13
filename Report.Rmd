@@ -235,6 +235,10 @@ team_filter <- function(team) {
   table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team,
   Opponent, Winning_Innings, Team_Score, Opp_Score, Winner, Loser, Winner_Score,
   Loser_Score, Margin, Ground, 'Match Date')
+  table1$Winner_Score <- as.integer(table1$Winner_Score)
+  table1$Loser_Score <- as.integer(table1$Loser_Score)
+  table1$Team_Score <- as.integer(table1$Team_Score)
+  table1$Opp_Score <- as.integer(table1$Opp_Score)
   return(table1)
 }
 colnames(table)[7] <- "Match Date"
