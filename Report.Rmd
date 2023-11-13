@@ -25,12 +25,15 @@ library(rvest)
 library(dplyr)
 library(tidyverse)
 
+# Loading the required datasets
 
 load("Data Sets/Cricket.RData")
 load("Data Sets/Teams_Table.RData")
 load("Data Sets/Cricket_Coord.RData")
 happy <- read.csv("Data Sets/Happiness_Index.csv")
 gdp <- read.csv("Data Sets/gdp_per_capita.csv")
+
+# A year function to find the year in the Date Format.
 
 year <- function(da) {
   return(as.integer(format(da, "%Y")))
@@ -62,6 +65,7 @@ First of all we scraped different team's ODI data using the following code -
 #| eval: false
 #| warning: false
 
+# This is to scrape ODI data from Cricinfo year wise.
 
 table <- NULL
 for (i in 1971:2023) {
@@ -81,9 +85,12 @@ for (i in 1971:2023) {
 
 colnames(table) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
 
+# This is to remove all matches, which were Draws or Ties. This does not allow us to scrape data of the World Cup 2019 finals. However, we add this data separately in the end.
+
 table <- table %>% filter(Winner != "no result") %>% filter(Winner != "tied")
 links <- table$Link
 
+# We go to the site containing the scorecard of each individual match, to scrape the scores of each team, and the winner, using the link in the previously scraped table.
 
 for (i in 1:dim(table)[1]) {
   print(i)
@@ -136,6 +143,8 @@ for (i in 1:dim(table)[1]) {
     table$Winner_Score[i] <- total_2
   }
 }
+
+# We use this to determine the team which lost the match.
 t1 <- table
 Loser <- numeric(length(t1$`Team 1`))
 for (i in 1:length(Loser)) {
@@ -146,9 +155,13 @@ for (i in 1:length(Loser)) {
     Loser[i] = t1$`Team 1`[i]
   }
 }
+
 table <- cbind(t1, Loser)
 table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
+
 mon <- month.abb
+
+# This is to convert the Match Date of the table to a usable form, such that it can be converted to Date type in R.
 
 conv_date <- function(date) {
   dd <- strsplit(date, " ")[[1]]
@@ -168,7 +181,15 @@ conv_date <- function(date) {
 for (i in 1:length(table$`Match Date`)) {
   table$`Match Date`[i] <- conv_date(table$`Match Date`[i])
 }
+
+# This is the Tied World Cup Finals, which we are adding separately.
+
+v <- c("England", "New Zealand", "0 runs", 241, 241, "Lord's", "2019-07-14", "Bowling")
+table <- rbind(table, v)
 table$`Match Date` <- as.Date(table$`Match Date`)
+table <- table %>% arrange(table$`Match Date`)
+
+# This is to determine which team won, based on which innings it played.
 
 Winning_Innings <- NULL
 for (i in 1:length(table$Margin)) {
@@ -182,6 +203,8 @@ for (i in 1:length(table$Margin)) {
 
 colnames(table)[7] <- "Match Date"
 table <- data.frame(table, Winning_Innings)
+
+# This function filters out matches played by a certain team selected.
 
 team_filter <- function(team) {
   table <- table %>% select(Winner, Loser, Margin, Winning_Innings, Winner_Score, Loser_Score, Ground, `Match Date`)
@@ -221,6 +244,9 @@ We also use this code to update the Team ODI Dataset, which instead of collectin
 
 load(file = "Data Sets/Teams_Table.Rdata")
 table2 <- NULL
+
+# Again, scrapes the data from Cricinfo.
+
 for (i in 1971:2023) {
   print(i)
   html <- read_html(paste0("https://www.espncricinfo.com/records/year/team-match-results/", i, "-", i, "/one-day-internationals-2"))
@@ -240,7 +266,10 @@ colnames(table2) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match D
 table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied")
 
 d1 <- dim(table)[1]
-d2 <- dim(table2)[1]
+d2 <- dim(table2)[1] + 1
+
+# Checks if any new matches have been played since we last scraped. If no, then it stops. If yes, it adds only the new matches, similar to the original scrape code.
+
 if (d1 == d2) {
   stop("No new data.")
 }
@@ -585,11 +614,13 @@ The GDP per Capital data was initially downloaded from [kaggle](https://www.kagg
 #| eval: false
 #| warning: false
 gdp <- read.csv("Data Sets/gdp_per_capita.csv")
+
 for (i in 3:63) {
   colnames(gdp)[i] <- 1957 + i
 }
-i <- 1965
-as.double((gdp %>% filter(Country.Name == "India"))[4] + (gdp %>% filter(Country.Name == "India"))[5])
+
+# Changes country name as how we have saved in our cricket datas.
+
 for (i in 1:length(gdp$Country.Name)) {
   if (gdp$Country.Name[i] == "United Kingdom") {
     gdp$Country.Name[i] = "England"
@@ -604,11 +635,49 @@ for (i in 1:length(gdp$Country.Name)) {
     gdp$Country.Name[i] = "U.S.A."
   }
 }
-gdp
+
 save(gdp, file = "Data Sets/gdp_per_capita.csv")
 ```
 
 The Happiness Index data was downloaded from [kaggle](https://www.kaggle.com/datasets/simonaasm/world-happiness-index-by-reports-2013-2023/?select=World+Happiness+Index+by+Reports+2013-2023+with+nulls.csv).
+
+This code is used to get the Coordinates of the teams in a workable format.
+```{r}
+#| echo: true
+#| eval: false
+#| warning: false
+
+# This gets all countries which form the West Indies.
+
+west_indies <- c("Saint Lucia", "Anguilla", "Dominican Republic", "Guadeloupe", "Antigua", "Barbados", "Jamaica", "Trinidad", "Cayman Islands", "Bahamas", "Haiti", "Cuba", "Virgin Islands", "Martinique", "Saint Kitts", "Bermuda", "Saint Barthelemy")
+
+# This is internally saved in R.
+
+r <- map_data("world")
+colnames(r)[5] <- "teams"
+
+# This is used to change country names such that it aligns with how it's saved in our data set.
+for (i in 1:length(r$teams)) {
+  if (r$teams[i] %in% west_indies) {
+    r$teams[i] <- "West Indies"
+  }
+  if (r$teams[i] == "UK") {
+    r$teams[i] <- "England"
+  }
+  if (r$teams[i] == "United Arab Emirates") {
+    r$teams[i] <- "U.A.E"
+  }
+  if (r$teams[i] == "USA") {
+    r$teams[i] <- "U.S.A."
+  }
+  if (r$teams[i] == "Papua New Guinea") {
+    r$teams[i] <- "P.N.G."
+  }
+}
+coord <- r
+save(coord, file = "Data Sets/Cricket_Coord.RData")
+```
+
 
 ## App Overview
 
@@ -659,9 +728,15 @@ This sub-tab provides a global perspective of ODI match outcomes. Users can adju
 #| echo: false
 #| eval: true
 #| warning: false
+
+# Selects teams which are countries.
+
 teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
 W_L <- NULL
 t <- table %>% filter((year(`Match Date`) >= 1971) & (year(`Match Date`) <= 2023))
+
+# Calculates Win to Loss Ratio.
+
 for (i in 1:length(teams)) {
   win <- sum(t$Winner == teams[i])
   loss <- sum(t$Loser == teams[i])
@@ -682,7 +757,7 @@ ggplot(data, aes(x = long, y = lat, group = group)) + geom_polygon(aes(fill = W_
 ```{r}
 #| echo: false
 #| eval: true
-
+# This is just a tabular form of the graph we got in the previous code.
 teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
 W_L <- NULL
 t <- table %>% filter((year(`Match Date`) >= 1971) & (year(`Match Date`) <= 2023))
@@ -699,65 +774,13 @@ for (i in 1:length(teams)) {
 WL <- data.frame(teams, W_L)
 colnames(WL)[1] <- "Teams"
 colnames(WL)[2] <- "Win to Loss Ratio"
+
+# The Data is saved in descending order, and we only need data for teams which have played ODI Cricket.
+
 x <- as_tibble(WL %>% arrange(desc(W_L)) %>% filter(!is.na(W_L)))
 x
 ```
 
-To represent different countries that take part in the ODI world cup each, we used the following code to mark their coordinates and display them in the world map -
-
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-library(ggplot2)
-west_indies <- c("Saint Lucia", "Anguilla", "Dominican Republic", "Guadeloupe", "Antigua", "Barbados", "Jamaica", "Trinidad", "Cayman Islands", "Bahamas", "Haiti", "Cuba", "Virgin Islands", "Martinique", "Saint Kitts", "Bermuda", "	
-Saint Barthelemy")
-r <- map_data("world")
-colnames(r)[5] <- "teams"
-for (i in 1:length(r$teams)) {
-  if (r$teams[i] %in% west_indies) {
-    r$teams[i] <- "West Indies"
-  }
-  if (r$teams[i] == "UK") {
-    r$teams[i] <- "England"
-  }
-  if (r$teams[i] == "United Arab Emirates") {
-    r$teams[i] <- "U.A.E"
-  }
-  if (r$teams[i] == "USA") {
-    r$teams[i] <- "U.S.A."
-  }
-  if (r$teams[i] == "Papua New Guinea") {
-    r$teams[i] <- "P.N.G."
-  }
-}
-coord <- r
-save(coord, file = "Cricket_Coord.RData")
-#data <- left_join(r, team_data, by = "teams")
-#save(data, file = "World_Coord.Rdata")
-#data <- data %>% filter(!is.na(win_loss))
-#data
-#ggplot(data, aes(x = long, y = lat, group = group)) + geom_polygon(aes(fill = win_loss), color = "black")
-teams <- unique(table$Loser)[c(1:6, 8:19, 24:28)]
-W_L <- NULL
-t1 <- 1980
-t2 <- 2021
-t <- table %>% filter((year(`Match Date`) >= t1) & (year(`Match Date`) <= t2))
-for (i in 1:length(teams)) {
-  win <- sum(t$Winner == teams[i])
-  loss <- sum(t$Loser == teams[i])
-  if (loss == 0) {
-    W_L <- append(W_L, NA)
-  }
-  else {
-    W_L <- append(W_L, win/loss)
-  }
-}
-WL <- data.frame(teams, W_L)
-WL
-data <- left_join(coord, WL, by = "teams")
-ggplot(data, aes(x = long, y = lat, group = group)) + geom_polygon(aes(fill = W_L), color = "black")
-```
 
 #### Team Overview
 
@@ -788,8 +811,14 @@ summary(t1)
 ```{r}
 #| echo: false
 #| eval: true
+
+# This can be selected by the users, and it filters the matches played by the country.
+
 t2 <- team_filter("Australia")
 team <- "Australia"
+
+# Time frame is set by the users.
+
 t <- t2 %>% filter((as.integer(year(t2$'Match Date')) >= 1971) & (as.integer(year(t2$'Match Date')) <= 2023))
 Team <- unique(t$Opponent)
 other <- Team
@@ -799,6 +828,9 @@ Won_Bat <- NULL
 Won_Bowl <- NULL
 Lost_Bat <- NULL
 Lost_Bowl <- NULL
+
+# This finds out number of matches won by the team against each of its opponents, batting or bowling first.
+
 for (i in 1:length(other)) {
   t1 <- t %>% filter(Opponent == other[i])
   Won <- append(Won, length((t1 %>% filter(Winner == team))$Winner))
@@ -815,6 +847,7 @@ d$'W_L Ratio'[is.infinite(d$'W_L Ratio')] <- NA
 d$'W_L Ratio' <- as.double(d$'W_L Ratio')
 d <- d %>% arrange(desc(d$'W_L Ratio'))
 colnames(d)[6] <- "Win to Loss Ratio"
+# gt is used to make it look good, and helps to visualise the date better.
 d <- gt(d)
 tab <- tab_spanner(d, label = "Batting", columns = ends_with("Bat"))
 tab <- tab_spanner(tab, label = "Chasing", columns = ends_with("Bowl"))
@@ -834,6 +867,7 @@ This sub-tab enables users to compare the performance of two selected teams over
 #| echo: false
 #| eval: true
 
+# Filters table in the way that users selects.
 t <- team_filter("Australia") %>% filter(Opponent == "England")
 t <- t %>% filter((year(`Match Date`) >= 1971) & (year(`Match Date`) <= 2023))
 colnames(t)[4] <- paste0("Australia Score")
@@ -916,8 +950,11 @@ This sub-tab provides insights into the correlation between a country's happines
 ```{r}
 #| echo: false
 #| eval: true
+
+# Users can select the countries they want to analyse. This is default.
 Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
 Correlation <- NULL
+# For each country, it finds out happiness index of each year, and win to loss ratio, and finds the correlation of the data.
 for (c in Countries) {
   tab <- happy %>% filter(Country == c)
   Tf <- team_filter(c)
@@ -955,6 +992,7 @@ barplot(names = Countries, height = Correlation, xlab = "Countries", ylab = "Cor
     #| echo: false
     #| eval: true
 
+    
     y1 <- happy %>% filter(Country == "India")
     y2 <- team_filter("India")
     Year <- NULL
@@ -994,6 +1032,7 @@ This sub-tab explores the correlation between a country's Gross Domestic Product
     #| eval: true
     Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
     Correlation <- NULL
+    # For each country, it finds out GDP of each year, and win to loss ratio, and finds the correlation of the data.
     for (c in Countries) {
       tab <- gdp %>% filter(Country.Name == c)
       Tf <- team_filter(c)
