@@ -83,7 +83,8 @@ for (i in 1971:2023) {
   table <- rbind(table, table1)
 }
 
-colnames(table) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
+colnames(table) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date",
+"Scorecard", "Link", "Winner_Score", "Loser_Score")
 
 # This is to remove all matches, which were Draws or Ties. This does not allow us to scrape data of the World Cup 2019 finals. However, we add this data separately in the end.
 
@@ -157,7 +158,8 @@ for (i in 1:length(Loser)) {
 }
 
 table <- cbind(t1, Loser)
-table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
+table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground,
+`Match Date`)
 
 mon <- month.abb
 
@@ -184,7 +186,8 @@ for (i in 1:length(table$`Match Date`)) {
 
 # This is the Tied World Cup Finals, which we are adding separately.
 
-v <- c("England", "New Zealand", "0 runs", 241, 241, "Lord's", "2019-07-14", "Bowling")
+v <- c("England", "New Zealand", "0 runs", 241, 241, "Lord's", "2019-07-14",
+"Bowling")
 table <- rbind(table, v)
 table$`Match Date` <- as.Date(table$`Match Date`)
 table <- table %>% arrange(table$`Match Date`)
@@ -207,7 +210,8 @@ table <- data.frame(table, Winning_Innings)
 # This function filters out matches played by a certain team selected.
 
 team_filter <- function(team) {
-  table <- table %>% select(Winner, Loser, Margin, Winning_Innings, Winner_Score, Loser_Score, Ground, `Match Date`)
+  table <- table %>% select(Winner, Loser, Margin, Winning_Innings, Winner_Score,
+  Loser_Score, Ground, `Match Date`)
   table1 <- table %>% filter(Winner == team | Loser == team)
   Team_Score <- NULL
   Opp_Score <- NULL
@@ -227,7 +231,9 @@ team_filter <- function(team) {
       Opponent = append(Opponent, table1$Winner[i])
     }
   }
-  table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team, Opponent, Winning_Innings, Team_Score, Opp_Score, Winner, Loser, Winner_Score, Loser_Score, Margin, Ground, 'Match Date')
+  table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team,
+  Opponent, Winning_Innings, Team_Score, Opp_Score, Winner, Loser, Winner_Score,
+  Loser_Score, Margin, Ground, 'Match Date')
   return(table1)
 }
 colnames(table)[7] <- "Match Date"
@@ -261,7 +267,8 @@ for (i in 1971:2023) {
   table1 <- cbind(table1, numeric(dim(table1)[1]))
   table2 <- rbind(table2, table1)
 }
-colnames(table2) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
+colnames(table2) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground",
+"Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
 
 table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied") %>% filter(Margin != "-")
 
@@ -341,7 +348,8 @@ for (i in 1:length(Loser)) {
   }
 }
 table2 <- cbind(t1, Loser)
-table2 <- table2 %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
+table2 <- table2 %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score,
+Ground, `Match Date`)
 
 mon <- month.abb
 
@@ -545,11 +553,25 @@ Team_Player <- Team_Player[-c(1:3,14)]
 Team_Player <- gsub("[(c)]","",Team_Player)
 # we print all the player name and mannually correct them 
 
-Team_Player[1] <- "Hashmatullah Shahidi , Rahmanullah Gurbaz, Ibrahim Zadran, Riaz Hassan, Rahmat Shah, Najibullah Zadran, Mohammad Nabi, Ikram Alikhil, Azmatullah Omarzai, Rashid Khan, Mujeeb ur Rahman, Noor Ahmad, Fazalhaq Farooqi, Abdul Rahman, Naveen-ul-Haq"
-Team_Player[2] <- "Pat Cummins, Sean Abbott, Alex Carey, Cameron Green, Josh Hazlewood, Travis Head, Josh Inglis, Marnus Labuschagne, Mitchell Marsh, Glenn Maxwell, Steven Smith, Mitchell Starc, Marcus Stoinis, David Warner, Adam Zampa"
-Team_Player[3] <- "Shakib Al Hasan , Liton Das , Najmul Hossain Shanto, Tanzid Hasan, Towhid Hridoy, Mahmudullah, Mushfiqur Rahim, Mehidy Hasan, Mahedi Hasan, Tanzim Hasan Sakib, Nasum Ahmed, Shoriful Islam, Hasan Mahmud, Taskin Ahmed, Mustafizur Rahman"
-Team_Player[4] <- "Jos Buttler , Moeen Ali, Gus Atkinson, Jonny Bairstow, Sam Curran, Liam Livingstone, Dawid Malan, Adil Rashid, Joe Root, Jason Roy, Ben Stokes, Reece Topley, David Willey, Mark Wood, Chris Woakes"
-Team_Player[6] <- "SA Edwards , Max O'Dowd, Bas de Leede, Vikram Singh, Teja Nidamanuru, Paul van Meekeren, Colin Ackermann, Roelof van der Merwe, Logan van Beek, Aryan Dutt, Ryan Klein, Wesley Barresi, Saqib Zulfiqar, Shariz Ahmad, Michael Rippon"
+Team_Player[1] <- "Hashmatullah Shahidi , Rahmanullah Gurbaz, Ibrahim Zadran,
+  Riaz Hassan, Rahmat Shah, Najibullah Zadran, Mohammad Nabi, Ikram Alikhil,
+  Azmatullah Omarzai, Rashid Khan, Mujeeb ur Rahman, Noor Ahmad, Fazalhaq Farooqi,
+  Abdul Rahman, Naveen-ul-Haq"
+Team_Player[2] <- "Pat Cummins, Sean Abbott, Alex Carey, Cameron Green,
+  Josh Hazlewood, Travis Head, Josh Inglis, Marnus Labuschagne, Mitchell Marsh,
+  Glenn Maxwell, Steven Smith, Mitchell Starc, Marcus Stoinis, David Warner,
+  Adam Zampa"
+Team_Player[3] <- "Shakib Al Hasan , Liton Das , Najmul Hossain Shanto,
+  Tanzid Hasan, Towhid Hridoy, Mahmudullah, Mushfiqur Rahim, Mehidy Hasan,
+  Mahedi Hasan, Tanzim Hasan Sakib, Nasum Ahmed, Shoriful Islam, Hasan Mahmud,
+  Taskin Ahmed, Mustafizur Rahman"
+Team_Player[4] <- "Jos Buttler , Moeen Ali, Gus Atkinson, Jonny Bairstow,
+  Sam Curran, Liam Livingstone, Dawid Malan, Adil Rashid, Joe Root, Jason Roy,
+  Ben Stokes, Reece Topley, David Willey, Mark Wood, Chris Woakes"
+Team_Player[6] <- "SA Edwards , Max O'Dowd, Bas de Leede, Vikram Singh,
+  Teja Nidamanuru, Paul van Meekeren, Colin Ackermann, Roelof van der Merwe,
+  Logan van Beek, Aryan Dutt, Ryan Klein, Wesley Barresi, Saqib Zulfiqar,
+  Shariz Ahmad, Michael Rippon"
 
 # from here we create a country name list with respect to the player 
 Afghanistan <- strsplit(x =Team_Player[1] , split = ",",fixed = TRUE )
@@ -607,7 +629,8 @@ for ( i in 5:length(Team)){
 
 
 
-The GDP per Capital data was initially downloaded from [kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv). It is cleaned to be used with the dataset collected, using this code.
+The GDP per Capital data was initially downloaded from [kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv).
+It is cleaned to be used with the dataset collected, using this code.
 
 ```{r}
 #| echo: true
@@ -649,7 +672,9 @@ This code is used to get the Coordinates of the teams in a workable format.
 
 # This gets all countries which form the West Indies.
 
-west_indies <- c("Saint Lucia", "Anguilla", "Dominican Republic", "Guadeloupe", "Antigua", "Barbados", "Jamaica", "Trinidad", "Cayman Islands", "Bahamas", "Haiti", "Cuba", "Virgin Islands", "Martinique", "Saint Kitts", "Bermuda", "Saint Barthelemy")
+west_indies <- c("Saint Lucia", "Anguilla", "Dominican Republic", "Guadeloupe",
+  "Antigua", "Barbados", "Jamaica", "Trinidad", "Cayman Islands", "Bahamas", "Haiti",
+  "Cuba", "Virgin Islands", "Martinique", "Saint Kitts", "Bermuda", "Saint Barthelemy")
 
 # This is internally saved in R.
 
@@ -681,12 +706,14 @@ save(coord, file = "Data Sets/Cricket_Coord.RData")
 
 ## App Overview
 
-The Shiny app consists of Three tabs, each dedicated to a specific aspect of cricket analysis.Now one by one deep explanation is below :
+The Shiny app consists of Three tabs, each dedicated to a specific aspect of cricket analysis.
+Now one by one deep explanation is below :
 
 
 ### Player ODI Data
 
-This tab allows users to explore individual player statistics for One Day International (ODI) matches. Users can select a country, choose a player, and specify whether they want to view batting or bowling statistics.
+This tab allows users to explore individual player statistics for One Day International (ODI) matches.
+Users can select a country, choose a player, and specify whether they want to view batting or bowling statistics.
 
 ![](pictures/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_29_47.png)
 
@@ -698,7 +725,8 @@ This tab allows users to explore individual player statistics for One Day Intern
 
 -   **Player Image**: An image of the selected player is displayed.
 
--   **Player Data Table**: Detailed statistics of the selected player are presented in a table format. This will be like:-
+-   **Player Data Table**: Detailed statistics of the selected player are presented in a table format.
+    This will be like:-
 
 ```{r}
 #| echo: false
@@ -788,7 +816,8 @@ This sub-tab allows users to select a specific team and view a summary of their 
 
 -   **Team Selection Dropdown**: Users can choose their ODI team from a dropdown menu.
 
--   **Year Range Slider**: Users can specify the range of years they want to analyze. ![](pictures/Team_Summary_Input.png){width="400"}
+-   **Year Range Slider**: Users can specify the range of years they want to analyze.
+    ![](pictures/Team_Summary_Input.png){width="400"}
 
 -   **Team Summary**:
 
@@ -945,16 +974,20 @@ tb
 
 This sub-tab provides insights into the correlation between a country's happiness index and its cricket team's performance.
 
--   **General View**: This view is to show the correlation of Happiness Index with the Win to Loss Ratio of the selected countries. ![](pictures/Happiness_General_Input.png){width="400"}
+-   **General View**: This view is to show the correlation of Happiness Index with the Win to Loss Ratio of the selected countries.
+    ![](pictures/Happiness_General_Input.png){width="400"}
 
 ```{r}
 #| echo: false
 #| eval: true
 
 # Users can select the countries they want to analyse. This is default.
-Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
+Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka",
+  "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland",
+  "Afghanistan")
 Correlation <- NULL
-# For each country, it finds out happiness index of each year, and win to loss ratio, and finds the correlation of the data.
+# For each country, it finds out happiness index of each year, and win to loss ratio,
+and finds the correlation of the data.
 for (c in Countries) {
   tab <- happy %>% filter(Country == c)
   Tf <- team_filter(c)
@@ -1030,9 +1063,12 @@ This sub-tab explores the correlation between a country's Gross Domestic Product
     ```{r}
     #| echo: false
     #| eval: true
-    Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
+    Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka",
+      "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland",
+      "Afghanistan")
     Correlation <- NULL
-    # For each country, it finds out GDP of each year, and win to loss ratio, and finds the correlation of the data.
+    # For each country, it finds out GDP of each year, and win to loss ratio,
+      and finds the correlation of the data.
     for (c in Countries) {
       tab <- gdp %>% filter(Country.Name == c)
       Tf <- team_filter(c)
@@ -1524,7 +1560,9 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
 
 ## Code Evaluation
 
-The R code for the Shiny app demonstrates proficiency in utilizing the Shiny package, data manipulation, and visualization techniques. The app's functionality is well-organized, allowing for seamless interaction with the cricket data. You can find codes here.[Click here](https://github.com/dootika/class-project-group_22)
+The R code for the Shiny app demonstrates proficiency in utilizing the Shiny package, data manipulation, and visualization techniques.
+The app's functionality is well-organized, allowing for seamless interaction with the cricket data.
+You can find codes here.[Click here](https://github.com/dootika/class-project-group_22)
 
 ## Interesting data-driven questions to think about
 
