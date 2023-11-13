@@ -19,6 +19,10 @@ gdp <- read.csv("../Data Sets/gdp_per_capita.csv")
 year <- function(da) {
   return(as.integer(format(da, "%Y")))
 }
+t <- table
+min(year(table$`Match Date`))
+min(as.integer(year(table$`Match Date`)))
+sum(is.na(table$`Match Date`))
 
 ui <- fluidPage(theme = shinytheme("slate"),
                 titlePanel("ODI"),
