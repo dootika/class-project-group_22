@@ -20,7 +20,7 @@ for (i in 1971:2023) {
 }
 colnames(table2) <- c("Team 1", "Team 2", "Winner", "Margin", "Ground", "Match Date", "Scorecard", "Link", "Winner_Score", "Loser_Score")
 
-table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied")
+table2 <- table2 %>% filter(Winner != "no result") %>% filter(Winner != "tied") %>% filter(Margin != "-")
 
 d1 <- dim(table)[1]
 d2 <- dim(table2)[1]
