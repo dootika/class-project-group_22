@@ -87,6 +87,7 @@ for (i in 1:length(Loser)) {
 }
 table <- cbind(t1, Loser)
 table <- table %>% select(Winner, Loser, Margin, Winner_Score, Loser_Score, Ground, `Match Date`)
+
 mon <- month.abb
 
 conv_date <- function(date) {
@@ -107,8 +108,10 @@ conv_date <- function(date) {
 for (i in 1:length(table$`Match Date`)) {
   table$`Match Date`[i] <- conv_date(table$`Match Date`[i])
 }
+v <- c("England", "New Zealand", "0 runs", 241, 241, "Lord's", "2019-07-14", "Bowling")
+table <- rbind(table, v)
 table$`Match Date` <- as.Date(table$`Match Date`)
-
+table <- table %>% arrange(table$`Match Date`)
 Winning_Innings <- NULL
 for (i in 1:length(table$Margin)) {
   if ((substr(table$Margin[i], nchar(table$Margin[i]) - 6, nchar(table$Margin[i]) - 1) == "wicket") | (substr(table$Margin[i], nchar(table$Margin[i]) - 5, nchar(table$Margin[i])) == "wicket")) {
