@@ -112,6 +112,9 @@ v <- c("England", "New Zealand", "0 runs", 241, 241, "Lord's", "2019-07-14", "Bo
 v[7] <- as.Date(v[7])
 table <- rbind(table, v)
 table$`Match Date` <- as.Date(table$`Match Date`)
+table$Winner_Score <- as.integer(table$Winner_Score)
+table$Loser_Score <- as.integer(table$Loser_Score)
+summary(table)
 Winning_Innings <- NULL
 for (i in 1:length(table$Margin)) {
   if ((substr(table$Margin[i], nchar(table$Margin[i]) - 6, nchar(table$Margin[i]) - 1) == "wicket") | (substr(table$Margin[i], nchar(table$Margin[i]) - 5, nchar(table$Margin[i])) == "wicket")) {
@@ -147,8 +150,13 @@ team_filter <- function(team) {
     }
   }
   table1 <- cbind(table1, Team_Score, Opp_Score, Team, Opponent) %>% select(Team, Opponent, Winning_Innings, Team_Score, Opp_Score, Winner, Loser, Winner_Score, Loser_Score, Margin, Ground, 'Match Date')
+  table1$Winner_Score <- as.integer(table1$Winner_Score)
+  table1$Loser_Score <- as.integer(table1$Loser_Score)
+  table1$Team_Score <- as.integer(table1$Team_Score)
+  table1$Opp_Score <- as.integer(table1$Opp_Score)
   return(table1)
 }
+
 colnames(table)[7] <- "Match Date"
 table <- table %>% arrange(table$`Match Date`)
 save(table, team_filter, file = "../Data Sets/Teams_Table.Rdata")
