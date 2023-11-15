@@ -653,8 +653,7 @@ for(i in seq_along(Team)) {
 
 
 ###############################################################################
-# from here we get the list of player and now we scrap the data in a such way 
-that we can store then together for further use 
+# from here we get the list of player and now we scrap the data in a such way that we can store then together for further use 
 country <- list()
 
 for ( i in 5:length(Team)){
@@ -882,6 +881,36 @@ t1 <- t1[c(4, 5, 8, 9, 12)]
 summary(t1)
 ```
 
+-   **Plot**: Users can see how much the team is scoring over a specified time frame.
+```{r}
+#| echo: false
+#| eval: true
+
+t <- "Australia"
+tf <- team_filter(t)
+tab <- tf %>% filter((as.integer(year(tf$'Match Date')) <= 2023) & (as.integer(year(tf$'Match Date')) >= 1971))
+Date <- NULL
+Score <- NULL
+Win <- NULL
+    
+for (i in 1:length(tab$Winner)) {
+  if (tab$Winner[i] == t) {
+    Date <- append(Date, tab$'Match Date'[i])
+    Score <- append(Score, tab$Winner_Score[i])
+    Win <- append(Win, "Won")
+  }
+  if (tab$Winner[i] != t) {
+    Date <- append(Date, tab$'Match Date'[i])
+    Score <- append(Score, tab$Loser_Score[i])
+    Win <- append(Win, "Lost")
+  }
+}
+tb <- data.frame(Date, Score, Win)
+# This plots out the scores made by the selected team, and colour codes it according to whether it won or lost the match.
+ggplot(tb, aes(x = Date, y = Score, col = Win)) + geom_point()
+```
+
+
 -   **Head-to-Head Table**: Users can see how the selected teams performs against other teams.
 
 ```{r}
@@ -947,6 +976,7 @@ This sub-tab enables users to compare the performance of two selected teams over
 
 -   **Team 1 Selection Dropdown**: Users can choose the first team from a dropdown menu.
 -   **Team 2 Selection Dropdown**: Users can choose the second team from a dropdown menu.
+![](pictures/MatchUpInput.png){width="300"}
 -   **Year Range Slider**: Users can specify the range of years they want to analyze.
 -   **Match Summary**: A summary of the matches when the two teams are playing each other.
 
@@ -1002,6 +1032,7 @@ for (i in 1:length(tab$Winner)) {
   }
 }
 t <- data.frame(Date, Score, Team)
+# This plots out scores made by both teams playing against each other, colour coded, by which team scored the runs.
 ggplot(t, aes(x = Date, y = Score, col = Team)) + geom_point()
 ```
 
@@ -1033,6 +1064,7 @@ Team_2 <- c(Team_2_Batting, Team_2_Bowling)
 tb <- data.frame(Innings, Team_1, Team_2)
 colnames(tb)[2] <- paste0(t1)
 colnames(tb)[3] <- paste0(t2)
+# Shows how many matches which team won, and in which innings.
 tb
 ```
 
@@ -1081,6 +1113,7 @@ for (c in Countries) {
   }
   Correlation <- append(Correlation, cor(Win_To_Loss, Happiness))
 }
+# This plots out the correlation of Happiness Index of a country with its Win to Loss Ratio.
 barplot(names = Countries, height = Correlation, xlab = "Countries", 
         ylab = "Correlation")
 ```
@@ -1118,6 +1151,7 @@ barplot(names = Countries, height = Correlation, xlab = "Countries",
         Win_To_Loss <- append(Win_To_Loss, Win/Loss)
       }
     }
+    # This plots out Happiness Index and Win To Loss Ratio with respect to Year, of the seleted country.
     matplot(Year, cbind(Happiness, Win_To_Loss), col = c("red", "blue"),
             pch = c(13, 16), xlab = "Year", 
             ylab = "Happiness Index + Win To Loss Ratio")
@@ -1169,6 +1203,7 @@ This sub-tab explores the correlation between a country's Gross Domestic Product
       }
       Correlation <- append(Correlation, cor(Win_To_Loss, GDP))
     }
+    # This plots out the correlation of GDP of a country with its Win to Loss Ratio.
     barplot(names = Countries, height = Correlation, xlab = "Countries",
             ylab = "Correlation")
     ```
@@ -1206,6 +1241,7 @@ for (i in Years) {
     Win_To_Loss <- append(Win_To_Loss, Win/Loss)
   }
 }
+# This plots out GDP and Win To Loss Ratio with respect to Year, of the seleted country.
 matplot(Years, cbind(GDP, 1000*Win_To_Loss), col = c("red", "blue"),
         pch = c(13, 16), xlab = "Years", ylab = "GDP + Win To Loss Ratio(x 1000)")
 legend("topright", legend = c("GDP per Capita", "Win To Loss Ratio(x 1000)"),
