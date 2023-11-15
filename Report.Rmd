@@ -818,6 +818,8 @@ for (i in 1:length(teams)) {
 }
 WL <- data.frame(teams, W_L)
 data <- left_join(coord, WL, by = "teams")
+
+# This graph plots out the win to loss ratio of each country which played ODI Cricket in the selected timeframe, with their position on the world map.
 ggplot(data, aes(x = long, y = lat, group = group)) +
   geom_polygon(aes(fill = W_L), color = "black")
 ```
