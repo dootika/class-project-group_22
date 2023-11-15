@@ -1,11 +1,8 @@
----
-title: Cricket Statistics Shiny App Explanation
-output: pdf_document
----
-
-Introduction
+Download the folder and run the app , before running all mentioned package should be installed. 
 
 The Cricket Statistics Shiny App is a web application built using the Shiny framework in R. It provides an interactive platform for cricket enthusiasts and analysts to delve into various aspects of cricket data.
+
+
 
 The Github Repository
 
