@@ -11,9 +11,9 @@ Folders
 
 This file contains
 
-Data sets: It contains R data and csv files.
+**Data sets**: It contains R data and csv files.
 
-Functions: It contains all the .R files.
+**Functions**: It contains all the .R files.
 
 1. Country_Coord : represents the coordinate of different countries on map.
 
@@ -29,9 +29,9 @@ Functions: It contains all the .R files.
 
 7. scrap bowling data function : it is used to scrap bowling data.
 
-Shiny App: Contains the ShinyApp.
+**Shiny App**: Contains the ShinyApp.
 
-Report: This contains report and  all its png's and other necessary graphs.
+**Report**: This contains report and  all its png's and other necessary graphs.
 
 1.Report.Rmd: This file contains the Report of the project.
 
