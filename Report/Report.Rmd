@@ -1,7 +1,7 @@
 ---
 title: "Project Report"
 author: "Group 22"
-date: "2023-11-09"
+date: "2023-11-16"
 output:
   html_document: default
   pdf_document: default
@@ -47,11 +47,13 @@ Here are a few questions laid down by us looking at the dataset:
 
 ### 2.1 Source and method of obtaining dataset
 
-There are many websites witch stores data of cricket player and teams we scraph the data from such a website called **CricMetric**
+We scraped the players data from a website called [Cricmetric](http://www.cricmetric.com/index.py), and Teams data from [Cricinfo](https://www.espncricinfo.com/records/list-of-match-results-by-year-307851).
+The GDP per Capital data was initially downloaded from - [kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv). It is cleaned to be used with the dataset collected.
+The Happiness Index data was downloaded from - [kaggle](https://www.kaggle.com/datasets/simonaasm/world-happiness-index-by-reports-2013-2023/?select=World+Happiness+Index+by+Reports+2013-2023+with+nulls.csv).
 
 ### 2.2 Describing datsaset variables
 
-The dataset we obtained was having data of all the ODI cricket player of all the teams that playes of had played ODI matches , we selected those player witch are playing now becouse we got the list of player of ODI team of every country that have ODI team .
+The datasets we obtained was having data of all the ODI cricket player of all the teams that players of had played ODI matches, we selected those player which are playing now because we got the list of player of ODI team of every country that have ODI team.
 
 #### 2.2.1 Categorical Variables
 
@@ -79,11 +81,11 @@ coord
 
 gdp
 
-:   This is a data set Which have row names as country name and columns have years and have gdp data in it .
+:   This is a data set which have row names as country name and columns have years and have gdp per capita of the country in that year in it.
 
 happy
 
-:   This is a dataset witch have row as country name and columns are year rank and index and data in it
+:   This is a dataset which have row as country name and columns have year, rank and happiness index data in it.
 
 image_links
 
@@ -91,11 +93,11 @@ image_links
 
 Player_Data
 
-:   Is a list conatin the data witch is same as All_Player_data but saved according to country names.
+:   Is a list contain the data which is same as All_Player_data but saved according to country names.
 
 table
 
-:   Contains Win and loose ratio of the teams in past matches .
+:   This is a table which contains data of all ODI Matches played, Winner, Loser, Winning Score, Losing Score, Winning Innings, Margin, Ground, Date.
 
 ## 3. How did we obtain our dataset? (Scraping it is!)
 
@@ -107,11 +109,16 @@ table
 
 ### 3.2 Problems we faced in this process
 
-The main problem is that when we scrap the player name and in **Crickmetric** website we put a player name and it says no data becouse there is a spell mistake in the name and on other website same happens with different player name.
+The main problem is that when we scrap the player name and in **Crickmetric** website we put a player name and it says no data because there is a spell mistake in the name and on other website same happens with different player name.
+
+The main problem with scraping on **Cricinfo** is that we got the winner, loser, date, ground and margin of each match easily in the form of a table which can be scraped easily, but getting the match scores was a bit more tricky. For good plots, we only consider matches which give a result(No draws or ties).
+
+
 
 ### 3.3 Solutions we used to tackle the aforementioned issues
 
-so after scraping we croos check the names of a player mainually , after getting the correct name we formed the list and makes a function the scrap the data a give input as a player name and takes output the dataset of the past years . The GDP per Capital data was initially downloaded from - [kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv). It is cleaned to be used with the dataset collected. The Happiness Index data was downloaded from - [kaggle](https://www.kaggle.com/datasets/simonaasm/world-happiness-index-by-reports-2013-2023/?select=World+Happiness+Index+by+Reports+2013-2023+with+nulls.csv).
+So after scraping we cross check the names of a player manually, after getting the correct name we formed the list and makes a function the scrap the data a give input as a player name and takes output the dataset of the past years.
+For getting the scores of the teams, we had to go to the link of the scorecard for each match, and scrape that site separately for the match scores.
 
 ## 4. Cleaning the Dataset
 
@@ -133,17 +140,21 @@ All the data we get from the website is in formet of character so we convert all
 
 #### 4.2.3 Functions that are user defined and used in scraping
 
-#### 4.2.3.1 Scrap_Bowling_data(Player name )
+#### 4.2.3.1 Scrap_Bowling_data(Player name)
 
-This function takes the player name and then from web site scrap the data and clean it and also calculationg the proablity of Bowler players to take witcket and also visulaise the data and combine in a list and give this list as output .
+This function takes the player name and then from web site scrap the data and clean it and also calculationg the probability of Bowler players to take witcket and also visulaise the data and combine in a list and give this list as output.
 
-#### 4.2.3.1 Scrap_Bating_data(Player name )
+#### 4.2.3.1 Scrap_Bating_data(Player name)
 
-This function takes the player name and then from web site scrap the data and clean it and also calculationg the proablity of players to hit runs and also visulaise the data and combine in a list and give this list as output .
+This function takes the player name and then from web site scrap the data and clean it and also calculating the proability of players to hit runs and also visualise the data and combine in a list and give this list as output.
+
+#### 4.2.4 Function to get ODI Data for a particular team
+
+We use the function team_filter(team_name) to filter out the ODI Matches played by that team, and it gives out the scores made by that team, the opponent, winner, loser, scores made by the winner, the loser, match date, ground, and margin of victory.
 
 ## 5. Cricket Function that simulated the match :
 
-This function takes four input two are player name and two are player data , baised of probablity of players the resyltes are calculated , now i will explain all the codes :
+This function takes four input two are player name and two are player data , based of probability of players the results are calculated, this is the code :
 
 ```{r}
 #| echo: true
@@ -386,7 +397,7 @@ Cricket_Match <- function(Team_Data_1 , Team_Data_2,Team_name_1,Team_name_2){
 
 #### 5.2.1 Function: All_Player_data$...$....\$[[3]]
 
-In this plot there are two coloured bars , rech are marked in right side of plot anyone can easily understand, the text on red coloured bar is of strike rate in that year and text on blue colured bar shows the rate that player out means in 1 inning what will be the probablity of player to br out is there .
+In this plot there are two coloured bars , rech are marked in right side of plot anyone can easily understand, the text on red coloured bar is of strike rate in that year and text on blue coloured bar shows the rate that player out means in 1 inning what will be the probablity of player to br out is there.
 
 #### 5.2.2 Function: imager(link of image )
 
@@ -396,15 +407,15 @@ This function plot the image of the player by using the link .
 
 The Shiny App made by our group had the following features:
 
--   ODI Player data tab in this tab viwer have to give input as a country name and player name and player data will be shown
+-   ODI Player data tab in this tab viewer have to give input as a country name and player name and player data will be shown
 
     ![](images/C__Users_indra_Downloads_class-project-group_22-main_class-project-group_22-main_Shiny%20App%20-%20Shiny%2008-11-2023%2016_24_43.png)
 
--   ODI team data tab by selection the year viwer can see the relevent output in the side as a tibble as a as plot and visualisation also .
+-   ODI team data tab by selection the year viewer can see the relevant output in the side as a tibble as a plot and visualisation also .
 
-    ![](images/World_W_L.png)
+    ![](images/World_W_L.png){width="400"}
 
--   Match tab In this tab player have to select the team baisd on that output will be genereted by using the ***Cricket_Match*** and viwer can also define a new team by selecting new team .
+-   Match tab In this tab player have to select the team based on that output will be generated by using the ***Cricket_Match*** and viewer can also define a new team by selecting new team .
 
     ![](images/A__Project%201_cricketshiny%20-%20Shiny%2007-11-2023%2013_33_07.png)
 
@@ -437,6 +448,8 @@ library(GGally)
 # library(ggplot)
 
 library(imager)
+
+library(plotly)
 
 library(rvest)
 
@@ -496,6 +509,7 @@ ggp + theme(axis.text.x = element_text(angle = 30))
 
 In this plot x axis shows the no of year , y axis shows the number of balls or baised on bar means for red bar it is run and for skyblue bar its ball , no the text on red bar are strike rate and on skyblue bar is the probablity to be out in a inning .
 
+
 #### 5.4.2 World Map Plot
 
 ```{r,echo=FALSE,eval=TRUE}
@@ -524,7 +538,7 @@ ggplot(data, aes(x = long, y = lat, group = group)) +
   geom_polygon(aes(fill = W_L), color = "black")
 ```
 
-This plot shows the win looss ratio of the team which is in coloured country on map and density of colour shows the high win loosse ratio .
+This plot shows the win loss ratio of the team colour coded on map and density of colour shows the win to loss ratio.
 
 #### 5.4.3 Match Up Plot
 
@@ -561,15 +575,57 @@ for (i in 1:length(tab$Winner)) {
 }
 t <- data.frame(Date, Score, Team)
 ggplot(t, aes(x = Date, y = Score, col = Team)) + geom_point()
-
-
 ```
 
-This plot shows the result of previous year matches x axis is the year and y axis shows the score and red and skyblue point are for different country .
+This plot shows the result of previous year matches. x axis is the year and y axis shows the score and red and blue points are for different country.
 
-#### 5.4.4 Country-Specific View
 
-```{r, echo=FALSE,eval=TRUE}
+#### 5.4.4 Happiness Index
+
+##### 5.4.4.1 Happiness Index Correlation Barplot
+
+```{r echo = FALSE}
+Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka", "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland", "Afghanistan")
+Correlation <- NULL
+for (c in Countries) {
+  tab <- happy %>% filter(Country == c)
+  Tf <- team_filter(c)
+  y_team <- unique(year(Tf$'Match Date'))
+  Year <- NULL
+  for (i in unique(tab$Year)) {
+    if (i %in% unique(year(Tf$'Match Date'))) {
+      Year <- append(Year, i)
+    }
+  }
+  Happiness <- NULL
+  Win_To_Loss <- NULL
+  for (i in Year) {
+    hap <- tab$Index[which(tab$Year == i, arr.ind = TRUE)]
+    Happiness <- append(Happiness, as.double(hap))
+    Win <- length((Tf %>% filter(Winner == c) %>% filter(year(`Match Date`) == i))$Winner)
+    Loss <- length((Tf %>% filter(Loser == c) %>% filter(year(`Match Date`) == i))$Loser)
+    if (Loss == 0) {
+      Win_To_Loss <- append(Win_To_Loss, Win)
+    }
+    else {
+      Win_To_Loss <- append(Win_To_Loss, Win/Loss)
+    }
+  }
+  Correlation <- append(Correlation, cor(Win_To_Loss, Happiness))
+}
+barplot(names = Countries, height = Correlation, xlab = "Countries", ylab = "Correlation")
+```
+
+This plot shows the correlation of Happiness Index with the Win to Loss Ratio of the countries selected. x axis is the country, and y axis is the correlation.
+
+##### 5.4.4.2 Country Specific View
+
+```{R echo = FALSE}
+
+#| echo: false
+#| eval: true
+#| warning: false 
+
 
 y1 <- happy %>% filter(Country == "India")
 y2 <- team_filter("India")
@@ -603,11 +659,19 @@ legend("topright", legend = c("Happiness Index", "Win To Loss Ratio"),
 
 ```
 
-This plot shows the combine view of happines index and winloos ratio .
+This plot shows the variation of Happiness Index and Win to Loss Ratio with year, of the selected country, India in this case.
 
-#### 5.4.5 A barplot showing GDP
 
-```{r, echo=FALSE ,eval=TRUE}
+####  5.4.5 GDP
+
+##### 5.4.5.1 GDP Correlation Barplot
+
+```{R echo = FALSE}
+
+#| echo: false
+#| eval: true
+#| warning: FALSE
+
 Countries <- c("Australia", "Pakistan", "New Zealand", "India", "Sri Lanka",
   "Zimbabwe", "Bangladesh", "South Africa", "Netherlands", "Kenya", "Ireland",
   "Afghanistan")
@@ -645,7 +709,39 @@ barplot(names = Countries, height = Correlation, xlab = "Countries",
         ylab = "Correlation")
 ```
 
-This plot shows the correclation between a fix country and other country , here India is fixed . \#### 5.4.6 A ggplot showing batsman output visualisation of match output
+This plot shows the correlation of GDP with the Win to Loss Ratio of the countries selected. x axis is the country, and y axis is the correlation.
+
+##### 5.5.5.2 Country Specific View
+```{r echo = FALSE}
+    t1 <- "India"
+    tab <- gdp %>% filter(Country.Name == t1)
+    Tf <- team_filter(t1)
+    y_team <- unique(year(Tf$'Match Date'))
+    Years <- NULL
+    for (i in 1960:2020) {
+      if (!is.na(tab[i - 1957] == "NA") & (as.integer(i) %in% y_team)) {
+        Years <- append(Years, as.integer(i))
+      }
+    }
+    GDP <- NULL
+    Win_To_Loss <- NULL
+    for (i in Years) {
+      GDP <- append(GDP, as.integer(tab[i - 1957]))
+      Win <- length((Tf %>% filter(Winner == t1) %>% filter(year(`Match Date`) == i))$Winner)
+      Loss <- length((Tf %>% filter(Loser == t1) %>% filter(year(`Match Date`) == i))$Loser)
+      if (Loss == 0) {
+        Win_To_Loss <- append(Win_To_Loss, Win)
+      }
+      else {
+        Win_To_Loss <- append(Win_To_Loss, Win/Loss)
+      }
+    }
+    matplot(Years, cbind(GDP, 1000*Win_To_Loss), col = c("red", "blue"), pch = c(13, 16), xlab = "Years", ylab = "GDP + Win To Loss Ratio(x 1000)")
+    legend("topright", legend = c("GDP per Capita", "Win To Loss Ratio(x 1000)"), col = c("red", "blue"), pch = c(13, 16))
+```
+
+This plot shows the variation of GDP and Win to Loss Ratio with year, of the selected country, India in this case.
+
 
 #### 5.4.6 A plotly shoing batsman data
 
@@ -660,11 +756,12 @@ data <- Cricket_Match(Player_Data$Afghanistan,Player_Data$India,
              shape = "Wicketeer", color = "No of Four", size = "No of Six") +
         theme(axis.text.x = element_text(angle = 45, 
                                          hjust = 1),legend.position = "none")
-p
+ ggplotly(p, tooltip = c("batsman_name", "Runs", "four", "six", "batsman_outer"))
 
 ```
 
-This plot shows the result of batsman as visualisation x bar shows the name of player and y bar shows the total run hit by a player shape shows who has taken the wicket , color shows no of Four, size shows No of Six. This plot is in ploty but in pdf cant be shown so to see deiscribed plot please refer to html document .
+This plot shows the result of batsman as visualisation x bar shows the name of player and y bar shows the total run hit by a player shape shows who has taken the wicket , color shows no of Four, size shows No of Six. This plot is in plotly but in pdf cant be shown so to see described plot please refer to html document .
+
 
 #### 5.4.7 A pie plot showing bowler data in match
 
@@ -698,12 +795,19 @@ This plot shows the result of batsman as visualisation x bar shows the name of p
 
 This pie plot shows the bowlers outcome in a match all detail are described in it .
 
+
 ## 6. Conclusions
 
 Access to individual player information throughout their career is a fantastic feature, especially for cricket fans who want to dig deep into player statistics and achievements. This can improve the overall cricketing experience. The ability to run live simulations with default teams or custom lineups is an appealing feature. It allows users to test strategies, create dream teams, and experience the excitement of live matches within the app. Displaying win-loss ratios for different countries in the ODI World Cup adds a competitive element to the app. Users can compare their customized team's performance to that of real-world national teams. Being capable to access summaries of previous encounters between two sides provides historical context. It allows users to research rivalries and historical events in cricket. Viewing a team's past performance, along with graphs, is a useful feature for those interested in in-depth analysis. It enables users to make data-driven decisions and understand team trends. It's interesting to see the correlation between GDP per capita, Happiness Index, and win-loss ratios of World Cup countries. It gives the app an educational and analytical dimension, appealing to users who are interested in the broader societal impact on sports performance.
 
 ## 7. References
 
--   Dataset scraped from [CricMetic](http://www.cricmetric.com/index.py)
+-   Players Dataset scraped from [Cricmetic](http://www.cricmetric.com/index.py)
+
+-   Teams Data scraped from [Cricinfo](https://www.espncricinfo.com/records/list-of-match-results-by-year-307851).
+
+-   Happiness Index data downloaded from [Kaggle](https://www.kaggle.com/datasets/simonaasm/world-happiness-index-by-reports-2013-2023/?select=World+Happiness+Index+by+Reports+2013-2023+with+nulls.csv).
+
+-   GDP per Capita data downloaded from [Kaggle](https://www.kaggle.com/datasets/zgrcemta/world-gdpgdp-gdp-per-capita-and-annual-growths?select=gdp_per_capita.csv).
 
 -   [R documentation](https://www.r-project.org/other-docs.html) was very useful for finding functions in base R.
