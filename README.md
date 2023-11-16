@@ -1,8 +1,9 @@
-Download the folder and run the app , before running all mentioned package should be installed. 
+**Download** **the** **folder** **and** **run** **the** **app** , before running all mentioned package should be installed. 
 list of libraries is -
+
 shiny , ggplot2 , png , magick , shinyjs , shinyalert , dplyr , shinythemes , gt , plotly
 
-
+All the needed resources are saved in **dataset** folder
 The Github Repository
 
 These are the following folders in repository with brief description
