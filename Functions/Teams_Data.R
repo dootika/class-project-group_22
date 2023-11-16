@@ -108,7 +108,8 @@ conv_date <- function(date) {
 for (i in 1:length(table$`Match Date`)) {
   table$`Match Date`[i] <- conv_date(table$`Match Date`[i])
 }
-v <- c("England", "New Zealand", "0 runs", 241, 241, "Lord's", "2019-07-14", "Bowling")
+d <- length(table$Winner)
+v <- c("England", "New Zealand", "0 wickets", 241, 241, "Lord's", "2019-07-14", "Bowling")
 v[7] <- as.Date(v[7])
 table <- rbind(table, v)
 table$`Match Date` <- as.Date(table$`Match Date`)
@@ -127,7 +128,7 @@ for (i in 1:length(table$Margin)) {
 
 colnames(table)[7] <- "Match Date"
 table <- data.frame(table, Winning_Innings)
-table[4491, 7] <- as.Date("2019-07-14")
+table[d + 1, 7] <- as.Date("2019-07-14")
 team_filter <- function(team) {
   table <- table %>% select(Winner, Loser, Margin, Winning_Innings, Winner_Score, Loser_Score, Ground, `Match Date`)
   table1 <- table %>% filter(Winner == team | Loser == team)
